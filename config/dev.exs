@@ -10,8 +10,8 @@ config :seren, SerenWeb.Endpoint,
   http: [port: 3000],
   debug_errors: true,
   code_reloader: true,
-  check_origin: false#,
-  # watchers: [npm: ["run", "watch"]]
+  check_origin: false,
+  watchers: [npm: ["run", "watch"]]
 
 # ## SSL Support
 #

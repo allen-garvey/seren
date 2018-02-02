@@ -18,6 +18,11 @@ erl_crash.dump
 #compiled assets
 priv/static/css
 priv/static/js
+priv/static/media
+
+#script outputs
+scripts/*.json
+scripts/*.sql
 
 #os and project specific files
 .DS_Store
