@@ -1,0 +1,31 @@
+table.track-list {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.track-list{
+	thead{
+		background: #d3ddcf;
+	}
+	th{
+		text-align: left;
+		cursor: pointer;
+	}
+
+	tbody tr:nth-of-type(even){
+		background: #ecffe5;
+	}
+
+	.col-play-btn{
+		width: 50px;
+	}
+}
+
+.track-list .track-play-button:hover:after{
+	content: 'Play';
+	margin-right: 2em;
+}
+
+.track-list .track-play-button.pause:after{
+	content: 'Pause';
+}

@@ -1,0 +1,46 @@
+$media-controls-container-height: 120px;
+
+.media-controls-container{
+	position: fixed;
+	bottom: 0;
+	height: $media-controls-container-height;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	// background: #e8ffe0;
+	//use more saturated color because colors are lighter at bottom of TN screens
+	background: #c6ffb3;
+	box-shadow: 0px -1px 15px rgba(41, 56, 36, 0.2);
+	padding: 24px;
+	font-size: 15px;
+}
+
+/*
+* Animations
+*/
+//marquee based on: https://codepen.io/jamesbarnett/pen/kfmKa
+.marquee {
+  position: relative;
+  overflow: hidden;
+  height: 1.5em;
+  width: 625px;
+}
+
+.marquee div {
+	position: absolute;
+	overflow: hidden;
+	width: 200%;
+	height: 100%;
+	animation: marquee 14s linear infinite;
+}
+
+.marquee span {
+  float: left;
+  width: 50%;
+}
+
+@keyframes marquee {
+  0% { left: 0; }
+  100% { left: -100%; }
+}
