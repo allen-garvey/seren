@@ -1,36 +1,48 @@
-<div class="jumbotron">
-  <h2><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h2>
-  <p class="lead">A productive web framework that<br />does not compromise speed and maintainability.</p>
-</div>
-
-<div class="row marketing">
-  <div class="col-lg-6">
-    <h4>Resources</h4>
-    <ul>
-      <li>
-        <a href="http://phoenixframework.org/docs/overview">Guides</a>
-      </li>
-      <li>
-        <a href="https://hexdocs.pm/phoenix">Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-    </ul>
+<div id="app">
+  <div class="media-controls-container">
+      <template v-if="activeTrack">
+          <div class="active-track-container marquee">
+              <div class="active-track-display">
+                  <span>{{activeTrackDisplay}}</span>
+                  <span>{{activeTrackDisplay}}</span>
+              </div>
+          </div>
+          <div class="track-time">
+              <span>{{formatTrackLength(elapsedTime)}}</span>
+              <span>{{formatTrackLength(activeTrack.length)}}</span>
+          </div>
+          <div class="media-controls" v-if="activeTrack">
+              <button @click="play(activeTrack)">{{ isTrackPlaying(activeTrack) ? 'Pause' : 'Play' }}</button>
+          </div>
+      </template>
+      <div v-if="!areTracksLoaded">Loading&hellip;</div>
   </div>
-
-  <div class="col-lg-6">
-    <h4>Help</h4>
-    <ul>
-      <li>
-        <a href="http://groups.google.com/group/phoenix-talk">Mailing list</a>
-      </li>
-      <li>
-        <a href="http://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">@elixirphoenix</a>
-      </li>
-    </ul>
-  </div>
+  <table class="track-list" v-show="areTracksLoaded">
+    <thead>
+        <th class="col-play-btn"></th>
+        <th @click="sortTracks('title')">Title</th>
+        <th @click="sortTracks('artist')">Artist</th>
+        <th @click="sortTracks('album_title')">Album</th>
+        <th @click="sortTracks('length')">Length</th>
+        <th @click="sortTracks('genre')">Genre</th>
+        <th @click="sortTracks('composer')">Composer</th>
+        <th @click="sortTracks('bit_rate')">Bit Rate</th>
+        <th @click="sortTracks('play_count')">Play Count</th>
+        <th @click="sortTracks('date_added')">Date Added</th>
+    </thead>
+    <tbody>
+        <tr v-for="track in tracks">
+            <td @click="play(track)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(track)}"></td>
+            <td>{{track.title}}</td>
+            <td>{{track.artist}}</td>
+            <td>{{track.album_title}}</td>
+            <td>{{formatTrackLength(track.length)}}</td>
+            <td>{{track.genre}}</td>
+            <td>{{track.composer}}</td>
+            <td>{{track.bit_rate}}</td>
+            <td>{{track.play_count}}</td>
+            <td>{{track.date_added}}</td>
+        </tr>
+    </tbody>
+  </table>
 </div>
