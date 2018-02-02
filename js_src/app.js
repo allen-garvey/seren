@@ -10,7 +10,7 @@
 	}
 
 	function getTracks(){
-		fetch('/api/tracks.excerpt.json').then((response)=>{ 
+		fetch('/api/tracks?limit=100').then((response)=>{ 
 			return response.json();
 		}).then((json)=>{
 			app.tracks = json.data;

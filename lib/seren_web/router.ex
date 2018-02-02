@@ -19,8 +19,10 @@ defmodule SerenWeb.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SerenWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", SerenWeb do
+    pipe_through :api
+
+    resources "/tracks", TrackController, only: [:index, :show]
+  end
+
 end
