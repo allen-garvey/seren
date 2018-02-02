@@ -23,6 +23,7 @@ priv/static/media
 #script outputs
 scripts/*.json
 scripts/*.sql
+scripts/*.csv
 
 #os and project specific files
 .DS_Store
