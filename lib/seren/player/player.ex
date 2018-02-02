@@ -22,7 +22,7 @@ defmodule Seren.Player do
   end
 
   def list_tracks(limit) do
-    from(t in Track, limit: ^limit) 
+    from(t in Track, limit: ^limit, order_by: [:artist, :album_title, :track_number, :title]) 
       |> Repo.all
   end
 
