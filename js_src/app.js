@@ -87,7 +87,7 @@
 				}
 				if(this.isPlaying){
 					elapsedTimeTimer = setInterval(()=>{ 
-						this.elapsedTime += 1000;
+						this.elapsedTime = audio.currentTime * 1000;
 					}, 1000);
 				}
 			},
