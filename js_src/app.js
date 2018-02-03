@@ -1,7 +1,12 @@
 (function(Vue, fetch){
 	var audio = new Audio();
 	audio.addEventListener('ended', function(){
-		app.displayTrackStopped();
+		if(app.hasNextTrack){
+			app.playNextTrack();
+		}
+		else{
+			app.displayTrackStopped();
+		}
 	});
 
 	var elapsedTimeTimer = null;
@@ -42,6 +47,7 @@
 		data: {
 			tracks: null,
 			activeTrack: null,
+			activeTrackIndex: null,
 			isPlaying: false,
 			elapsedTime: 0,
 		},
@@ -59,6 +65,12 @@
 				}
 				return ret;
 			},
+			hasPreviousTrack: function(){
+				return this.areTracksLoaded && this.activeTrack && this.activeTrackIndex > 0;
+			},
+			hasNextTrack: function(){
+				return this.areTracksLoaded && this.activeTrack && this.activeTrackIndex < this.tracks.length - 1;
+			},
 		},
 		methods: {
 			loadMoreTracks: function(){
@@ -67,9 +79,10 @@
 			isTrackPlaying: function(track){
 				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.id;
 			},
-			play: function(track){
+			play: function(track, trackIndex){
 				if(!this.activeTrack || this.activeTrack.id !== track.id){
 					this.activeTrack = track;
+					this.activeTrackIndex = trackIndex;
 					this.isPlaying = true;
 					this.elapsedTime = 0;
 					let mediaUrl = '/media/' + encodeURI(track.file_path);
@@ -94,6 +107,33 @@
 			displayTrackStopped: function(){
 				this.isPlaying = false;
 				clearInterval(elapsedTimeTimer);
+			},
+			previousButtonAction: function(){
+				//go back to beginning of track
+				//if more than a fixed amount has played
+				if(this.elapsedTime > 4000){
+					this.elapsedTime = 0;
+					audio.currentTime = 0;
+				}
+				else{
+					this.playPreviousTrack();
+				}
+			},
+			playPreviousTrack: function(){
+				if(!this.hasPreviousTrack){
+					return;
+				}
+				let trackIndex = this.activeTrackIndex - 1;
+				let track = this.tracks[trackIndex];
+				this.play(track, trackIndex);
+			},
+			playNextTrack: function(){
+				if(!this.hasNextTrack){
+					return;
+				}
+				let trackIndex = this.activeTrackIndex + 1;
+				let track = this.tracks[trackIndex];
+				this.play(track, trackIndex);
 			},
 			formatTrackLength: function(trackLength){
 				let hours = 0;

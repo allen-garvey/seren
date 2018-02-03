@@ -12,7 +12,9 @@
               <span>{{formatTrackLength(activeTrack.length)}}</span>
           </div>
           <div class="media-controls" v-if="activeTrack">
+              <button @click="previousButtonAction" v-bind:disabled="!hasPreviousTrack">Previous</button>
               <button @click="play(activeTrack)">{{ isTrackPlaying(activeTrack) ? 'Pause' : 'Play' }}</button>
+              <button @click="playNextTrack" v-bind:disabled="!hasNextTrack">Next</button>
           </div>
       </template>
       <div v-if="!areTracksLoaded">Loading&hellip;</div>
@@ -31,8 +33,8 @@
         <th @click="sortTracks('date_added')">Date Added</th>
     </thead>
     <tbody>
-        <tr v-for="track in tracks">
-            <td @click="play(track)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(track)}"></td>
+        <tr v-for="(track, i) in tracks">
+            <td @click="play(track, i)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(track)}"></td>
             <td>{{track.title}}</td>
             <td>{{track.artist}}</td>
             <td>{{track.album_title}}</td>
