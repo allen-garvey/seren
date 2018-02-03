@@ -1,6 +1,7 @@
 defmodule SerenWeb.TrackView do
   use SerenWeb, :view
   alias SerenWeb.TrackView
+  alias SerenWeb.SharedView
 
   def render("index.json", %{tracks: tracks}) do
     %{data: render_many(tracks, TrackView, "track_excerpt.json")}
@@ -16,7 +17,7 @@ defmodule SerenWeb.TrackView do
       title: track.title,
       artist: track.artist,
       genre: track.genre,
-      date_added: track.date_added,
+      date_added: SharedView.datetime_to_us_date(track.date_added),
       file_type: track.file_type,
       file_path: track.file_path,
       length: track.length,
@@ -25,7 +26,7 @@ defmodule SerenWeb.TrackView do
       composer: track.composer,
       artwork_count: track.artwork_count,
       play_count: track.play_count,
-      play_date: track.play_date
+      play_date: SharedView.datetime_to_us_date(track.play_date)
     }
   end
 
