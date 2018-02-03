@@ -1,5 +1,9 @@
 (function(Vue, fetch){
 	var audio = new Audio();
+	audio.addEventListener('ended', function(){
+		app.displayTrackStopped();
+	});
+
 	var elapsedTimeTimer = null;
 
 	//based on: https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
@@ -9,11 +13,20 @@
 	  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 	}
 
-	function getTracks(){
-		fetch('/api/tracks?limit=100').then((response)=>{ 
+	function getTracks(offset){
+		let url = '/api/tracks?limit=100';
+		if(offset){
+			url = `${url}&offset=${offset}`;
+		}
+		fetch(url).then((response)=>{ 
 			return response.json();
 		}).then((json)=>{
-			app.tracks = json.data;
+			if(offset){
+				app.tracks = app.tracks.concat(json.data);
+			}
+			else{
+				app.tracks = json.data;
+			}
 		});
 	}
 
@@ -48,6 +61,9 @@
 			},
 		},
 		methods: {
+			loadMoreTracks: function(){
+				getTracks(this.tracks.length);
+			},
 			isTrackPlaying: function(track){
 				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.id;
 			},
@@ -66,8 +82,7 @@
 					audio.play();
 				}
 				else{
-					this.isPlaying = false;
-					clearInterval(elapsedTimeTimer);
+					this.displayTrackStopped();
 					audio.pause();
 				}
 				if(this.isPlaying){
@@ -75,6 +90,10 @@
 						this.elapsedTime += 1000;
 					}, 1000);
 				}
+			},
+			displayTrackStopped: function(){
+				this.isPlaying = false;
+				clearInterval(elapsedTimeTimer);
 			},
 			formatTrackLength: function(trackLength){
 				let hours = 0;

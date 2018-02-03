@@ -10,6 +10,11 @@ defmodule SerenWeb.TrackController do
     render(conn, "index.json", tracks: tracks)
   end
 
+  def index(conn, %{"limit" => limit, "offset" => offset}) do
+    tracks = Player.list_tracks(limit, offset)
+    index_page(conn, tracks)
+  end
+
   def index(conn, %{"limit" => limit}) do
     tracks = Player.list_tracks(limit)
     index_page(conn, tracks)
