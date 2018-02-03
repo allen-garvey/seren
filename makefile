@@ -1,12 +1,21 @@
 
 VUE_MIN_JS=node_modules/vue/dist/vue.min.js
+VUE_INFINITE_SCROLL_SRC=node_modules/vue-infinite-scroll/vue-infinite-scroll.js
 
 JS_OUTPUT_DIR=priv/static/js
 JS_OUTPUT_LIB_DIR=$(JS_OUTPUT_DIR)/lib
 VUE_OUTPUT=$(JS_OUTPUT_LIB_DIR)/vue.min.js
+VUE_INFINITE_SCROLL_OUTPUT=$(JS_OUTPUT_LIB_DIR)/vue-infinite-scroll.js
 
-setup: $(VUE_OUTPUT)
+setup: $(VUE_OUTPUT) $(VUE_INFINITE_SCROLL_OUTPUT)
 
-$(VUE_OUTPUT): $(VUE_MIN_JS)
+$(JS_OUTPUT_LIB_DIR):
 	mkdir -p $(JS_OUTPUT_LIB_DIR)
+
+$(VUE_OUTPUT): $(JS_OUTPUT_LIB_DIR) $(VUE_MIN_JS)
 	cat $(VUE_MIN_JS) > $(VUE_OUTPUT)
+
+$(VUE_INFINITE_SCROLL_OUTPUT): $(JS_OUTPUT_LIB_DIR) $(VUE_INFINITE_SCROLL_SRC)
+	cat $(VUE_INFINITE_SCROLL_SRC) > $(VUE_INFINITE_SCROLL_OUTPUT)
+
+
