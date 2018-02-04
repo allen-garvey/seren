@@ -1,4 +1,9 @@
 <div id="app">
+  <nav class="nav">
+    <ul class="nav-list nav-pills">
+      <li v-for="key in [...tabs.keys()]" v-bind:class="{active: activeTab === key}" @click="changeTab(key)">{{ tabs.get(key).title }}</li>
+    </ul>
+  </nav>
   <div class="media-controls-container">
       <template v-if="activeTrack">
           <div class="active-track-container marquee">

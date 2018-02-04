@@ -11,6 +11,15 @@
 
 	var elapsedTimeTimer = null;
 
+	//navigation tabs
+	//note: as of now Maps are not reactive in Vue
+	var tabsMap = new Map();
+	tabsMap.set('artists', {title: 'Artists'});
+	tabsMap.set('albums', {title: 'Albums'});
+	tabsMap.set('composers', {title: 'Composers'});
+	tabsMap.set('genres', {title: 'Genres'});
+	tabsMap.set('tracks', {title: 'Tracks'});
+
 	//based on: https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
 	function padNumber(n, width, z) {
 	  z = z || '0';
@@ -50,6 +59,8 @@
 			activeTrackIndex: null,
 			isPlaying: false,
 			elapsedTime: 0,
+			tabs: tabsMap,
+			activeTab: 'tracks',
 		},
 		computed: {
 			areTracksLoaded: function(){
@@ -73,6 +84,9 @@
 			},
 		},
 		methods: {
+			changeTab: function(tabKey){
+				this.activeTab = tabKey;
+			},
 			loadMoreTracks: function(){
 				getTracks(this.tracks.length);
 			},

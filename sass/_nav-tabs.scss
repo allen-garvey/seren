@@ -1,0 +1,26 @@
+.nav-list{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	padding: 0;
+	list-style-type: none;
+}
+
+$nav_pills_color: #007bff;
+
+.nav-pills li{
+	color: $nav_pills_color;
+	cursor: pointer;
+	padding: 0.5em 1em;
+}
+
+.nav-pills li:hover{
+	color: #0056b3;
+}
+
+.nav-pills li.active{
+	cursor: auto;
+	background: $nav_pills_color;
+	color: white;
+	border-radius: 4px;
+}
