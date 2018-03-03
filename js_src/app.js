@@ -32,21 +32,6 @@
 	  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 	}
 
-	function formatTrackLength(trackLength){
-		let hours = 0;
-		let totalSeconds = Math.floor(trackLength / 1000);
-		let minutes = Math.floor(totalSeconds / 60);
-		if(minutes > 59){
-			hours = Math.floor(minutes / 60);
-			minutes = minutes % 60;
-		}
-		let seconds = totalSeconds % 60;
-		if(hours > 0){
-			return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
-		}
-		return `${minutes}:${padNumber(seconds, 2)}`;
-	}
-
 	function getJson(url){
 		return fetch(url).then((response)=>{ 
 			return response.json();
@@ -111,7 +96,7 @@
 				if(!this.activeTrack){
 					return '';
 				}
-				let ret = `${this.activeTrack.title} - ${this.activeTrack.artist}`;
+				let ret = `${this.activeTrack.title} - ${artistsMap.get(this.activeTrack.artist_id).name}`;
 				if(this.activeTrack.album_title){
 					ret = `${ret} - ${this.activeTrack.album_title}`;
 				}
@@ -248,7 +233,7 @@
 						track.title,
 						artistsMap.get(track.artist_id).name,
 						track.album_title,
-						formatTrackLength(track.length),
+						this.formatTrackLength(track.length),
 						track.genre,
 						track.composer,
 						track.bit_rate,
@@ -257,6 +242,20 @@
 					];
 				}
 				return [item.name];
+			},
+			formatTrackLength: function(trackLength){
+				let hours = 0;
+				let totalSeconds = Math.floor(trackLength / 1000);
+				let minutes = Math.floor(totalSeconds / 60);
+				if(minutes > 59){
+					hours = Math.floor(minutes / 60);
+					minutes = minutes % 60;
+				}
+				let seconds = totalSeconds % 60;
+				if(hours > 0){
+					return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
+				}
+				return `${minutes}:${padNumber(seconds, 2)}`;
 			},
 		}
 	});
