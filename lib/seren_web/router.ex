@@ -23,6 +23,7 @@ defmodule SerenWeb.Router do
     pipe_through :api
 
     resources "/tracks", TrackController, only: [:index, :show]
+    resources "/artists", ArtistController, only: [:index, :show]
   end
 
 end

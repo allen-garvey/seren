@@ -15,7 +15,7 @@ defmodule SerenWeb.TrackView do
     %{
       id: track.id,
       title: track.title,
-      artist: track.artist,
+      artist_id: track.artist_id,
       genre: track.genre,
       date_added: SharedView.datetime_to_us_date(track.date_added),
       file_type: track.file_type,
@@ -35,7 +35,7 @@ defmodule SerenWeb.TrackView do
       id: track.id,
       itunes_id: track.itunes_id,
       title: track.title,
-      artist: track.artist,
+      artist_id: track.artist_id,
       genre: track.genre,
       date_modified: track.date_modified,
       date_added: track.date_added,
