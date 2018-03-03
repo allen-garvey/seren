@@ -22,33 +22,21 @@
               <button @click="playNextTrack" v-bind:disabled="!hasNextTrack">Next</button>
           </div>
       </template>
-      <div v-if="!areTracksLoaded">Loading&hellip;</div>
+      <div v-if="!isInitialLoadComplete">Loading&hellip;</div>
   </div>
-  <table class="track-list" v-show="areTracksLoaded" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="!areTracksLoaded" infinite-scroll-immediate-check="false">
+  <table class="track-list" v-show="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
     <thead>
         <th class="col-play-btn"></th>
-        <th @click="sortTracks('title')">Title</th>
-        <th @click="sortTracks('artist')">Artist</th>
-        <th @click="sortTracks('album_title')">Album</th>
-        <th @click="sortTracks('length')">Length</th>
-        <th @click="sortTracks('genre')">Genre</th>
-        <th @click="sortTracks('composer')">Composer</th>
-        <th @click="sortTracks('bit_rate')">Bit Rate</th>
-        <th @click="sortTracks('play_count')">Play Count</th>
-        <th @click="sortTracks('date_added')">Date Added</th>
+        <template v-for="column in itemColumns">
+          <th @click="sortItems(column.sort)">{{column.title}}</th>
+        </template>
     </thead>
     <tbody>
-        <tr v-for="(track, i) in tracks">
-            <td @click="play(track, i)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(track)}"></td>
-            <td>{{track.title}}</td>
-            <td>{{track.artist}}</td>
-            <td>{{track.album_title}}</td>
-            <td>{{formatTrackLength(track.length)}}</td>
-            <td>{{track.genre}}</td>
-            <td>{{track.composer}}</td>
-            <td>{{track.bit_rate}}</td>
-            <td>{{track.play_count}}</td>
-            <td>{{track.date_added}}</td>
+        <tr v-for="(item, i) in items">
+            <td @click="play(item, i)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(item)}"></td>
+            <template v-for="field in itemFields(item)">
+              <td>{{field}}</td>
+            </template>
         </tr>
     </tbody>
   </table>

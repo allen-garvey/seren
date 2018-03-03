@@ -1,4 +1,9 @@
 (function(Vue, fetch){
+	var apiUrlBase = '/api/';
+
+	var artists = null;
+	var artistsMap = null;
+
 	var audio = new Audio();
 	audio.addEventListener('ended', function(){
 		if(app.hasNextTrack){
@@ -27,20 +32,52 @@
 	  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 	}
 
+	function formatTrackLength(trackLength){
+		let hours = 0;
+		let totalSeconds = Math.floor(trackLength / 1000);
+		let minutes = Math.floor(totalSeconds / 60);
+		if(minutes > 59){
+			hours = Math.floor(minutes / 60);
+			minutes = minutes % 60;
+		}
+		let seconds = totalSeconds % 60;
+		if(hours > 0){
+			return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
+		}
+		return `${minutes}:${padNumber(seconds, 2)}`;
+	}
+
+	function getJson(url){
+		return fetch(url).then((response)=>{ 
+			return response.json();
+		});
+	}
+
 	function getTracks(offset){
-		let url = '/api/tracks?limit=100';
+		let url = `${apiUrlBase}tracks?limit=100`;
 		if(offset){
 			url = `${url}&offset=${offset}`;
 		}
-		fetch(url).then((response)=>{ 
-			return response.json();
-		}).then((json)=>{
+		getJson(url).then((json)=>{
 			if(offset){
 				app.tracks = app.tracks.concat(json.data);
 			}
 			else{
 				app.tracks = json.data;
 			}
+		});
+	}
+
+	function getArtists(){
+		let url = `${apiUrlBase}artists`;
+		getJson(url).then((json)=>{
+			artists = json.data;
+
+			artistsMap = new Map();
+
+			artists.forEach((artist)=>{
+				artistsMap.set(artist.id, artist);
+			});
 		});
 	}
 
@@ -51,6 +88,7 @@
 	var app = new Vue({
 		el: '#app',
 		mounted: function(){
+			getArtists();
 			getTracks();
 		},
 		data: {
@@ -63,8 +101,11 @@
 			activeTab: 'tracks',
 		},
 		computed: {
-			areTracksLoaded: function(){
-				return this.tracks !== null;
+			isInitialLoadComplete: function(){
+				return this.tracks !== null && artists !== null;
+			},
+			isInfiniteScrollDisabled: function(){
+				return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
 			},
 			activeTrackDisplay: function(){
 				if(!this.activeTrack){
@@ -77,10 +118,32 @@
 				return ret;
 			},
 			hasPreviousTrack: function(){
-				return this.areTracksLoaded && this.activeTrack && this.activeTrackIndex > 0;
+				return this.activeTrack && this.activeTrackIndex > 0;
 			},
 			hasNextTrack: function(){
-				return this.areTracksLoaded && this.activeTrack && this.activeTrackIndex < this.tracks.length - 1;
+				return this.activeTrack && this.activeTrackIndex < this.tracks.length - 1;
+			},
+			items: function(){
+				if(this.activeTab === 'artists'){
+					return artists;
+				}
+				return this.tracks;
+			},
+			itemColumns: function(){
+				if(this.activeTab === 'tracks'){
+					return [
+						{title: 'Title', sort: 'title'},
+						{title: 'Artist', sort: 'artist'},
+						{title: 'Album', sort: 'album_title'},
+						{title: 'Length', sort: 'length'},
+						{title: 'Genre', sort: 'Genre'},
+						{title: 'Composer', sort: 'Composer'},
+						{title: 'Bit Rate', sort: 'Bit Rate'},
+						{title: 'Play Count', sort: 'play_count'},
+						{title: 'Date Added', sort: 'date_added'},
+					];
+				}
+				return [{title: 'Name', sort: 'name'}];
 			},
 		},
 		methods: {
@@ -149,22 +212,8 @@
 				let track = this.tracks[trackIndex];
 				this.play(track, trackIndex);
 			},
-			formatTrackLength: function(trackLength){
-				let hours = 0;
-				let totalSeconds = Math.floor(trackLength / 1000);
-				let minutes = Math.floor(totalSeconds / 60);
-				if(minutes > 59){
-					hours = Math.floor(minutes / 60);
-					minutes = minutes % 60;
-				}
-				let seconds = totalSeconds % 60;
-				if(hours > 0){
-					return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
-				}
-				return `${minutes}:${padNumber(seconds, 2)}`;
-			},
-			sortTracks: function(key){
-				this.tracks = this.tracks.sort((a,b)=>{
+			sortItems: function(key){
+				this.items = this.items.sort((a,b)=>{
 					let value1 = a[key];
 					let value2 = b[key];
 					if(isEmpty(value1) && isEmpty(value2)){
@@ -191,6 +240,23 @@
 					}
 					return 0;
 				});
+			},
+			itemFields: function(item){
+				if(this.activeTab == 'tracks'){
+					let track = item;
+					return [
+						track.title,
+						artistsMap.get(track.artist_id).name,
+						track.album_title,
+						formatTrackLength(track.length),
+						track.genre,
+						track.composer,
+						track.bit_rate,
+						track.play_count,
+						track.date_added,
+					];
+				}
+				return [item.name];
 			},
 		}
 	});
