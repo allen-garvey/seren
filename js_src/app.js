@@ -53,6 +53,11 @@
 		});
 	}
 
+	function getTracksForItem(itemType, itemId){
+		let url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
+		return getJson(url);
+	}
+
 	function getArtists(){
 		let url = `${apiUrlBase}artists`;
 		getJson(url).then((json)=>{
@@ -78,14 +83,21 @@
 		},
 		data: {
 			tracks: null,
+			displayTracks: [],
 			activeTrack: null,
 			activeTrackIndex: null,
 			isPlaying: false,
 			elapsedTime: 0,
 			tabs: tabsMap,
-			activeTab: 'tracks',
+			path: ['tracks'],
 		},
 		computed: {
+			activeTab: function(){
+				return this.path[0];
+			},
+			activePage: function(){
+				return this.path[this.path.length - 1];
+			},
 			isInitialLoadComplete: function(){
 				return this.tracks !== null && artists !== null;
 			},
@@ -109,13 +121,18 @@
 				return this.activeTrack && this.activeTrackIndex < this.tracks.length - 1;
 			},
 			items: function(){
-				if(this.activeTab === 'artists'){
-					return artists;
+				if(this.activeTab !== 'tracks' && this.activePage === 'tracks'){
+					return this.displayTracks;
 				}
-				return this.tracks;
+				switch(this.activeTab){
+					case 'artists':
+						return artists;
+					default:
+						return this.tracks;
+				}
 			},
 			itemColumns: function(){
-				if(this.activeTab === 'tracks'){
+				if(this.activePage === 'tracks'){
 					return [
 						{title: 'Title', sort: 'title'},
 						{title: 'Artist', sort: 'artist'},
@@ -133,13 +150,30 @@
 		},
 		methods: {
 			changeTab: function(tabKey){
-				this.activeTab = tabKey;
+				this.path = [tabKey];
 			},
 			loadMoreTracks: function(){
 				getTracks(this.tracks.length);
 			},
 			isTrackPlaying: function(track){
 				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.id;
+			},
+			doubleClickRowAction: function(item, rowIndex){
+				if(this.activePage === 'tracks'){
+					this.play(item, rowIndex);
+				}
+				else{
+					this.displayTracksForItem(item);
+				}
+			},
+			displayTracksForItem: function(item){
+				displayTracks = [];
+				getTracksForItem(this.activeTab, item.id).then((json)=>{
+					this.displayTracks = json.data;
+					// console.log(this.displayTracks);
+					// console.log(json.data);
+				});
+				this.path = this.path.concat([item.id, 'tracks']);
 			},
 			play: function(track, trackIndex){
 				if(!this.activeTrack || this.activeTrack.id !== track.id){
@@ -227,7 +261,7 @@
 				});
 			},
 			itemFields: function(item){
-				if(this.activeTab == 'tracks'){
+				if(this.activePage === 'tracks'){
 					let track = item;
 					return [
 						track.title,
