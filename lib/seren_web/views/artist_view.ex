@@ -18,8 +18,7 @@ defmodule SerenWeb.ArtistView do
   def render("artist_show.json", %{artist: artist}) do
     %{
       id: artist.id,
-      name: artist.name,
-      tracks: render_many(artist.tracks, SerenWeb.TrackView, "track_excerpt.json")
+      name: artist.name
     }
   end
 end

@@ -11,6 +11,13 @@ defmodule SerenWeb.ArtistController do
     render(conn, "index.json", artists: artists)
   end
 
+  def tracks_for(conn, %{"id" => id}) do
+    tracks = Player.tracks_for_artist(id)
+    conn
+      |> put_view(SerenWeb.TrackView)
+      |> SerenWeb.TrackController.index_page(tracks)
+  end
+
   def create(conn, %{"artist" => artist_params}) do
     with {:ok, %Artist{} = artist} <- Player.create_artist(artist_params) do
       conn

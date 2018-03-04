@@ -24,6 +24,8 @@ defmodule SerenWeb.Router do
 
     resources "/tracks", TrackController, only: [:index, :show]
     resources "/artists", ArtistController, only: [:index, :show]
+
+    get "/artists/:id/tracks", ArtistController, :tracks_for
   end
 
 end

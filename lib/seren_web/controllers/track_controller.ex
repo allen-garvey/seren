@@ -6,7 +6,7 @@ defmodule SerenWeb.TrackController do
 
   action_fallback SerenWeb.FallbackController
 
-  defp index_page(conn, tracks) do
+  def index_page(conn, tracks) do
     render(conn, "index.json", tracks: tracks)
   end
 

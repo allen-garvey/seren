@@ -32,6 +32,14 @@ defmodule Seren.Player do
   end
 
   @doc """
+  Returns list of tracks for various models
+  """
+  def tracks_for_artist(id) do
+    from(t in Track, where: t.artist_id == ^id, order_by: [:album_title, :track_number, :title])
+      |> Repo.all
+  end
+
+  @doc """
   Gets a single track.
 
   Raises `Ecto.NoResultsError` if the Track does not exist.
@@ -143,7 +151,7 @@ defmodule Seren.Player do
 
   """
   def get_artist!(id) do
-    Repo.get!(Artist, id) |> Repo.preload([:tracks])
+    Repo.get!(Artist, id)
   end
 
   @doc """
