@@ -1,9 +1,6 @@
 (function(Vue, fetch){
 	var apiUrlBase = '/api/';
 
-	var artists = null;
-	var artistsMap = null;
-
 	var audio = new Audio();
 	audio.addEventListener('ended', function(){
 		if(app.hasNextTrack){
@@ -38,21 +35,6 @@
 		});
 	}
 
-	function getTracks(offset){
-		let url = `${apiUrlBase}tracks?limit=100`;
-		if(offset){
-			url = `${url}&offset=${offset}`;
-		}
-		getJson(url).then((json)=>{
-			if(offset){
-				app.tracks = app.tracks.concat(json.data);
-			}
-			else{
-				app.tracks = json.data;
-			}
-		});
-	}
-
 	function getTracksForItem(itemType, itemId){
 		let url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
 		return getJson(url);
@@ -61,12 +43,12 @@
 	function getArtists(){
 		let url = `${apiUrlBase}artists`;
 		getJson(url).then((json)=>{
-			artists = json.data;
+			app.artists = json.data;
 
-			artistsMap = new Map();
+			app.artistsMap = new Map();
 
-			artists.forEach((artist)=>{
-				artistsMap.set(artist.id, artist);
+			app.artists.forEach((artist)=>{
+				app.artistsMap.set(artist.id, artist);
 			});
 		});
 	}
@@ -79,10 +61,12 @@
 		el: '#app',
 		mounted: function(){
 			getArtists();
-			getTracks();
+			this.loadMoreTracks();
 		},
 		data: {
 			tracks: null,
+			artists: null,
+			artistsMap: null,
 			displayTracks: [],
 			activeTrack: null,
 			activeTrackIndex: null,
@@ -99,7 +83,7 @@
 				return this.path[this.path.length - 1];
 			},
 			isInitialLoadComplete: function(){
-				return this.tracks !== null && artists !== null;
+				return this.tracks !== null && this.artists !== null && this.artistsMap !== null;
 			},
 			isInfiniteScrollDisabled: function(){
 				return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
@@ -108,7 +92,7 @@
 				if(!this.activeTrack){
 					return '';
 				}
-				let ret = `${this.activeTrack.title} - ${artistsMap.get(this.activeTrack.artist_id).name}`;
+				let ret = `${this.activeTrack.title} - ${this.artistsMap.get(this.activeTrack.artist_id).name}`;
 				if(this.activeTrack.album_title){
 					ret = `${ret} - ${this.activeTrack.album_title}`;
 				}
@@ -126,7 +110,7 @@
 				}
 				switch(this.activeTab){
 					case 'artists':
-						return artists;
+						return this.artists;
 					default:
 						return this.tracks;
 				}
@@ -153,7 +137,20 @@
 				this.path = [tabKey];
 			},
 			loadMoreTracks: function(){
-				getTracks(this.tracks.length);
+				let offset = this.tracks ? this.tracks.length : false;
+
+				let url = `${apiUrlBase}tracks?limit=100`;
+				if(offset){
+					url = `${url}&offset=${offset}`;
+				}
+				getJson(url).then((json)=>{
+					if(offset){
+						this.tracks = this.tracks.concat(json.data);
+					}
+					else{
+						this.tracks = json.data;
+					}
+				});
 			},
 			isTrackPlaying: function(track){
 				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.id;
@@ -265,7 +262,7 @@
 					let track = item;
 					return [
 						track.title,
-						artistsMap.get(track.artist_id).name,
+						this.artistsMap.get(track.artist_id).name,
 						track.album_title,
 						this.formatTrackLength(track.length),
 						track.genre,

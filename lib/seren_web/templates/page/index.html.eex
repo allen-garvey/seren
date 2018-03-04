@@ -24,7 +24,7 @@
       </template>
       <div v-if="!isInitialLoadComplete">Loading&hellip;</div>
   </div>
-  <table class="track-list" v-show="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
+  <table class="track-list" v-if="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
     <thead>
         <th class="col-play-btn"></th>
         <template v-for="column in itemColumns">
