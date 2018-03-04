@@ -1,6 +1,7 @@
 table.track-list {
     width: 100%;
     table-layout: fixed;
+    border-collapse: collapse;
 }
 
 .track-list{
@@ -8,7 +9,7 @@ table.track-list {
 		background: #b6cfe7;
 	}
 	th, td{
-		padding: 0.25em;
+		padding: 0.5em;
 	}
 	th{
 		text-align: left;
