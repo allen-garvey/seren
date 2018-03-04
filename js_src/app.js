@@ -178,7 +178,8 @@
 					this.activeTrackIndex = trackIndex;
 					this.isPlaying = true;
 					this.elapsedTime = 0;
-					let mediaUrl = '/media/' + encodeURI(track.file_path);
+					// let mediaUrl = '/media/' + encodeURI(track.file_path).replace('#', '%23').replace('?', '%3F');
+					let mediaUrl = '/media/' + escape(track.file_path);
 					audio.src = mediaUrl;
 					audio.load();
 					audio.play();
