@@ -18,6 +18,8 @@ table.track-list {
 
 	tbody tr{
 		transition: background-color 0.3s ease;
+		cursor: pointer;
+		
 		&:nth-of-type(even){
 			background: #e6f2fe;
 		}
