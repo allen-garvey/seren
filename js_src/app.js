@@ -102,17 +102,23 @@
 				return this.activeTrack && this.activeTrackIndex > 0;
 			},
 			hasNextTrack: function(){
-				return this.activeTrack && this.activeTrackIndex < this.tracks.length - 1;
+				return this.activeTrack && this.activeTrackIndex < this.activePageTracks.length - 1;
 			},
-			items: function(){
+			activePageTracks: function(){
 				if(this.activeTab !== 'tracks' && this.activePage === 'tracks'){
 					return this.displayTracks;
+				}
+				return this.tracks;	
+			},
+			items: function(){
+				if(this.activeTab === 'tracks' || this.activePage === 'tracks'){
+					return this.activePageTracks;
 				}
 				switch(this.activeTab){
 					case 'artists':
 						return this.artists;
 					default:
-						return this.tracks;
+						return this.activePageTracks;
 				}
 			},
 			itemColumns: function(){
@@ -167,8 +173,6 @@
 				displayTracks = [];
 				getTracksForItem(this.activeTab, item.id).then((json)=>{
 					this.displayTracks = json.data;
-					// console.log(this.displayTracks);
-					// console.log(json.data);
 				});
 				this.path = this.path.concat([item.id, 'tracks']);
 			},
@@ -218,7 +222,7 @@
 					return;
 				}
 				let trackIndex = this.activeTrackIndex - 1;
-				let track = this.tracks[trackIndex];
+				let track = this.activePageTracks[trackIndex];
 				this.play(track, trackIndex);
 			},
 			playNextTrack: function(){
@@ -226,7 +230,7 @@
 					return;
 				}
 				let trackIndex = this.activeTrackIndex + 1;
-				let track = this.tracks[trackIndex];
+				let track = this.activePageTracks[trackIndex];
 				this.play(track, trackIndex);
 			},
 			sortItems: function(key){
