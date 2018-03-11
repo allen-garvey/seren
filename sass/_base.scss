@@ -1,3 +1,5 @@
+$media-controls-container-height: 120px;
+
 html, body{
 	margin: 0;
 }
@@ -8,4 +10,5 @@ html, body{
 
 #app{
 	position: relative;
+	padding-bottom: $media-controls-container-height + 20px;
 }
