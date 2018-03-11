@@ -121,6 +121,22 @@
 				}
 				return ret;
 			},
+			playButtonTitle: function(){
+				if(this.isPlaying){
+					return `Pause ${this.activeTrack.track.title}`;
+				}
+				else if(this.activeTrack){
+					return `Play ${this.activeTrack.track.title}`;
+				}
+				return 'Play track';
+
+			},
+			playButtonText: function(){
+				if(this.isPlaying){
+					return '&#9646;&#9646;';
+				}
+				return '&#9654;';
+			},
 			hasPreviousTrack: function(){
 				return this.activeTrack && this.activeTrack.index > 0;
 			},
@@ -182,7 +198,7 @@
 				});
 			},
 			isTrackPlaying: function(track){
-				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.id;
+				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.track.id;
 			},
 			doubleClickRowAction: function(item, rowIndex){
 				if(this.activePage === 'tracks'){

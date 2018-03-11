@@ -16,10 +16,12 @@
               <span>{{formatTrackLength(elapsedTime)}}</span>
               <span>{{formatTrackLength(activeTrack.track.length)}}</span>
           </div>
-          <div class="media-controls" v-if="activeTrack">
-              <button @click="previousButtonAction" v-bind:disabled="!hasPreviousTrack">Previous</button>
-              <button @click="playButtonAction">{{ isTrackPlaying(activeTrack) ? 'Pause' : 'Play' }}</button>
-              <button @click="playNextTrack" v-bind:disabled="!hasNextTrack">Next</button>
+          <div class="media-controls">
+              <button class="button-previous media-controls-button media-controls-button-rounded" @click="previousButtonAction" v-bind:disabled="!hasPreviousTrack" title="Play previous track">&#9194;</button>
+              <button class="button-play media-controls-button" v-bind:class="{'is-paused': !isPlaying}" @click="playButtonAction" v-bind:disabled="!activeTrack" v-bind:title="playButtonTitle">
+                <span v-html="playButtonText"></span>
+              </button>
+              <button class="button-next media-controls-button media-controls-button-rounded" @click="playNextTrack" v-bind:disabled="!hasNextTrack" title="Play next track">&#9193;</button>
           </div>
       </template>
       <div v-if="!isInitialLoadComplete">Loading&hellip;</div>
@@ -34,7 +36,7 @@
     <tbody>
         <template v-for="(item, i) in items">
           <tr @dblclick="doubleClickRowAction(item, i)">
-            <td @click="play(item, i)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(item)}"></td>
+            <td @click="play(item, i, path)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(item)}"></td>
             <template v-for="field in itemFields(item)">
               <td>{{field}}</td>
             </template>
