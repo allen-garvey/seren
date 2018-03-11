@@ -18,7 +18,7 @@
           </div>
           <div class="media-controls" v-if="activeTrack">
               <button @click="previousButtonAction" v-bind:disabled="!hasPreviousTrack">Previous</button>
-              <button @click="play(activeTrack)">{{ isTrackPlaying(activeTrack) ? 'Pause' : 'Play' }}</button>
+              <button @click="playButtonAction">{{ isTrackPlaying(activeTrack) ? 'Pause' : 'Play' }}</button>
               <button @click="playNextTrack" v-bind:disabled="!hasNextTrack">Next</button>
           </div>
       </template>

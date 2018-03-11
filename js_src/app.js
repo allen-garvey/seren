@@ -186,7 +186,7 @@
 			},
 			doubleClickRowAction: function(item, rowIndex){
 				if(this.activePage === 'tracks'){
-					this.play(item, rowIndex);
+					this.play(item, rowIndex, this.path);
 				}
 				else{
 					this.displayTracksForItem(item);
@@ -199,9 +199,8 @@
 				});
 				this.path = this.path.concat([item.id, 'tracks']);
 			},
-			//isCycle is when previous or next buttons are pressed
-			play: function(track, trackIndex, isCycle=false){
-				if(!isCycle && (!this.activeTrack || !areArraysEqual(this.activeTrack.path, this.path))){
+			play: function(track, trackIndex, trackPath){
+				if(!this.activeTrack || !areArraysEqual(this.activeTrack.path, trackPath)){
 					//if we are on tracks page, we only want to reference the tracks,
 					//otherwise we want to copy it
 					if(this.activePage === 'tracks'){
@@ -214,7 +213,7 @@
 				if(!this.activeTrack || this.activeTrack.track.id !== track.id){
 					this.activeTrack = {
 						track: track,
-						path: this.path.slice(),
+						path: trackPath.slice(),
 						index: trackIndex,
 					};
 					this.isPlaying = true;
@@ -225,23 +224,31 @@
 					audio.load();
 					audio.play();
 				}
-				else if(!this.isPlaying){
+				else{
 					this.isPlaying = true;
 					audio.play();
 				}
-				else{
-					this.displayTrackStopped();
-					audio.pause();
-				}
-				if(this.isPlaying){
-					elapsedTimeTimer = setInterval(()=>{ 
-						this.elapsedTime = audio.currentTime * 1000;
-					}, 1000);
-				}
+				//not sure if necessary
+				// clearInterval(elapsedTimeTimer);
+				elapsedTimeTimer = setInterval(()=>{ 
+					this.elapsedTime = audio.currentTime * 1000;
+				}, 1000);
+			},
+			stop: function(){
+				this.displayTrackStopped();
+				audio.pause();
 			},
 			displayTrackStopped: function(){
 				this.isPlaying = false;
 				clearInterval(elapsedTimeTimer);
+			},
+			playButtonAction: function(){
+				if(this.isPlaying){
+					this.stop();
+				}
+				else{
+					this.play(this.activeTrack.track, this.activeTrack.index, this.activeTrack.path);
+				}
 			},
 			previousButtonAction: function(){
 				//go back to beginning of track
@@ -260,7 +267,7 @@
 				}
 				let trackIndex = this.activeTrack.index - 1;
 				let track = this.activeTrackTrackList[trackIndex];
-				this.play(track, trackIndex, true);
+				this.play(track, trackIndex, this.activeTrack.path);
 			},
 			playNextTrack: function(){
 				if(!this.hasNextTrack){
@@ -268,7 +275,7 @@
 				}
 				let trackIndex = this.activeTrack.index + 1;
 				let track = this.activeTrackTrackList[trackIndex];
-				this.play(track, trackIndex, true);
+				this.play(track, trackIndex, this.activeTrack.path);
 			},
 			sortItems: function(key){
 				this.items = this.items.sort((a,b)=>{
