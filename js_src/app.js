@@ -53,6 +53,27 @@
 		});
 	}
 
+	//only compares arrays of primitives (strings, booleans, numbers)
+	//also will fail on NaN
+	function areArraysEqual(a1, a2){
+		if(a1 === a2){
+			return true;
+		}
+		if(a1 === null || a2 === null){
+			return false;
+		}
+		if(a1.length !== a2.length){
+			return false;
+		}
+
+		for(let i=0;i<a1.length;i++){
+			if(a1[i] !== a2[i]){
+				return false;
+			}
+		}
+
+		return true;
+	}
 	function isEmpty(value){
 		return value === null || value === undefined;
 	}
@@ -68,8 +89,10 @@
 			artists: null,
 			artistsMap: null,
 			displayTracks: [],
+			//activeTrackTrackList: the track list when the currently playing track started playing
+			//this is so that when pages are changed, the correct next track will play
+			activeTrackTrackList: [],
 			activeTrack: null,
-			activeTrackIndex: null,
 			isPlaying: false,
 			elapsedTime: 0,
 			tabs: tabsMap,
@@ -92,17 +115,17 @@
 				if(!this.activeTrack){
 					return '';
 				}
-				let ret = `${this.activeTrack.title} - ${this.artistsMap.get(this.activeTrack.artist_id).name}`;
-				if(this.activeTrack.album_title){
-					ret = `${ret} - ${this.activeTrack.album_title}`;
+				let ret = `${this.activeTrack.track.title} - ${this.artistsMap.get(this.activeTrack.track.artist_id).name}`;
+				if(this.activeTrack.track.album_title){
+					ret = `${ret} - ${this.activeTrack.track.album_title}`;
 				}
 				return ret;
 			},
 			hasPreviousTrack: function(){
-				return this.activeTrack && this.activeTrackIndex > 0;
+				return this.activeTrack && this.activeTrack.index > 0;
 			},
 			hasNextTrack: function(){
-				return this.activeTrack && this.activeTrackIndex < this.activePageTracks.length - 1;
+				return this.activeTrack && this.activeTrack.index < this.activeTrackTrackList.length - 1;
 			},
 			activePageTracks: function(){
 				if(this.activeTab !== 'tracks' && this.activePage === 'tracks'){
@@ -176,10 +199,24 @@
 				});
 				this.path = this.path.concat([item.id, 'tracks']);
 			},
-			play: function(track, trackIndex){
-				if(!this.activeTrack || this.activeTrack.id !== track.id){
-					this.activeTrack = track;
-					this.activeTrackIndex = trackIndex;
+			//isCycle is when previous or next buttons are pressed
+			play: function(track, trackIndex, isCycle=false){
+				if(!isCycle && (!this.activeTrack || !areArraysEqual(this.activeTrack.path, this.path))){
+					//if we are on tracks page, we only want to reference the tracks,
+					//otherwise we want to copy it
+					if(this.activePage === 'tracks'){
+						this.activeTrackTrackList = this.activePageTracks;
+					}
+					else{
+						this.activeTrackTrackList = this.activePageTracks.slice();
+					}
+				}
+				if(!this.activeTrack || this.activeTrack.track.id !== track.id){
+					this.activeTrack = {
+						track: track,
+						path: this.path.slice(),
+						index: trackIndex,
+					};
 					this.isPlaying = true;
 					this.elapsedTime = 0;
 					// let mediaUrl = '/media/' + encodeURI(track.file_path).replace('#', '%23').replace('?', '%3F');
@@ -221,17 +258,17 @@
 				if(!this.hasPreviousTrack){
 					return;
 				}
-				let trackIndex = this.activeTrackIndex - 1;
-				let track = this.activePageTracks[trackIndex];
-				this.play(track, trackIndex);
+				let trackIndex = this.activeTrack.index - 1;
+				let track = this.activeTrackTrackList[trackIndex];
+				this.play(track, trackIndex, true);
 			},
 			playNextTrack: function(){
 				if(!this.hasNextTrack){
 					return;
 				}
-				let trackIndex = this.activeTrackIndex + 1;
-				let track = this.activePageTracks[trackIndex];
-				this.play(track, trackIndex);
+				let trackIndex = this.activeTrack.index + 1;
+				let track = this.activeTrackTrackList[trackIndex];
+				this.play(track, trackIndex, true);
 			},
 			sortItems: function(key){
 				this.items = this.items.sort((a,b)=>{
