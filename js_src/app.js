@@ -228,11 +228,12 @@
 					this.isPlaying = true;
 					audio.play();
 				}
-				//not sure if necessary
-				// clearInterval(elapsedTimeTimer);
-				elapsedTimeTimer = setInterval(()=>{ 
-					this.elapsedTime = audio.currentTime * 1000;
-				}, 1000);
+				//only start timer if not already going
+				if(elapsedTimeTimer === null){
+					elapsedTimeTimer = setInterval(()=>{ 
+						this.elapsedTime = audio.currentTime * 1000;
+					}, 1000);
+				}
 			},
 			stop: function(){
 				this.displayTrackStopped();
@@ -241,6 +242,7 @@
 			displayTrackStopped: function(){
 				this.isPlaying = false;
 				clearInterval(elapsedTimeTimer);
+				elapsedTimeTimer = null;
 			},
 			playButtonAction: function(){
 				if(this.isPlaying){
