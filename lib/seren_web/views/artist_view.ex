@@ -7,18 +7,11 @@ defmodule SerenWeb.ArtistView do
   end
 
   def render("show.json", %{artist: artist}) do
-    %{data: render_one(artist, ArtistView, "artist_show.json")}
+    %{data: render_one(artist, ArtistView, "artist.json")}
   end
 
   def render("artist.json", %{artist: artist}) do
     %{id: artist.id,
       name: artist.name}
-  end
-
-  def render("artist_show.json", %{artist: artist}) do
-    %{
-      id: artist.id,
-      name: artist.name
-    }
   end
 end
