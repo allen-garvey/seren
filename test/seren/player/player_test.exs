@@ -226,4 +226,64 @@ defmodule Seren.PlayerTest do
       assert %Ecto.Changeset{} = Player.change_genre(genre)
     end
   end
+
+  describe "composers" do
+    alias Seren.Player.Composer
+
+    @valid_attrs %{name: "some name"}
+    @update_attrs %{name: "some updated name"}
+    @invalid_attrs %{name: nil}
+
+    def composer_fixture(attrs \\ %{}) do
+      {:ok, composer} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Player.create_composer()
+
+      composer
+    end
+
+    test "list_composers/0 returns all composers" do
+      composer = composer_fixture()
+      assert Player.list_composers() == [composer]
+    end
+
+    test "get_composer!/1 returns the composer with given id" do
+      composer = composer_fixture()
+      assert Player.get_composer!(composer.id) == composer
+    end
+
+    test "create_composer/1 with valid data creates a composer" do
+      assert {:ok, %Composer{} = composer} = Player.create_composer(@valid_attrs)
+      assert composer.name == "some name"
+    end
+
+    test "create_composer/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Player.create_composer(@invalid_attrs)
+    end
+
+    test "update_composer/2 with valid data updates the composer" do
+      composer = composer_fixture()
+      assert {:ok, composer} = Player.update_composer(composer, @update_attrs)
+      assert %Composer{} = composer
+      assert composer.name == "some updated name"
+    end
+
+    test "update_composer/2 with invalid data returns error changeset" do
+      composer = composer_fixture()
+      assert {:error, %Ecto.Changeset{}} = Player.update_composer(composer, @invalid_attrs)
+      assert composer == Player.get_composer!(composer.id)
+    end
+
+    test "delete_composer/1 deletes the composer" do
+      composer = composer_fixture()
+      assert {:ok, %Composer{}} = Player.delete_composer(composer)
+      assert_raise Ecto.NoResultsError, fn -> Player.get_composer!(composer.id) end
+    end
+
+    test "change_composer/1 returns a composer changeset" do
+      composer = composer_fixture()
+      assert %Ecto.Changeset{} = Player.change_composer(composer)
+    end
+  end
 end

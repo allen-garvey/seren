@@ -23,7 +23,7 @@ defmodule SerenWeb.TrackView do
       length: track.length,
       bit_rate: track.bit_rate,
       album_title: track.album_title,
-      composer: track.composer,
+      composer_id: track.composer_id,
       artwork_count: track.artwork_count,
       play_count: track.play_count,
       play_date: SharedView.datetime_to_us_date(track.play_date)
@@ -52,7 +52,7 @@ defmodule SerenWeb.TrackView do
       album_disc_count: track.album_disc_count,
       album_artist: track.album_artist,
       album_track_count: track.album_track_count,
-      composer: track.composer,
+      composer_id: track.composer_id,
       artwork_count: track.artwork_count,
       play_count: track.play_count,
       play_date: track.play_date

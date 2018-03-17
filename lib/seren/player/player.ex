@@ -44,6 +44,11 @@ defmodule Seren.Player do
       |> Repo.all
   end
 
+  def tracks_for_composer(id) do
+    from(t in Track, join: a in assoc(t, :artist), where: t.composer_id == ^id, order_by: [:album_title, :album_disc_number, :track_number, a.name, :title])
+      |> Repo.all
+  end
+
   @doc """
   Gets a single track.
 
@@ -319,5 +324,102 @@ defmodule Seren.Player do
   """
   def change_genre(%Genre{} = genre) do
     Genre.changeset(genre, %{})
+  end
+
+  alias Seren.Player.Composer
+
+  @doc """
+  Returns the list of composers.
+
+  ## Examples
+
+      iex> list_composers()
+      [%Composer{}, ...]
+
+  """
+  def list_composers do
+    from(Composer, order_by: :name) 
+      |> Repo.all
+  end
+
+  @doc """
+  Gets a single composer.
+
+  Raises `Ecto.NoResultsError` if the Composer does not exist.
+
+  ## Examples
+
+      iex> get_composer!(123)
+      %Composer{}
+
+      iex> get_composer!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_composer!(id), do: Repo.get!(Composer, id)
+
+  @doc """
+  Creates a composer.
+
+  ## Examples
+
+      iex> create_composer(%{field: value})
+      {:ok, %Composer{}}
+
+      iex> create_composer(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_composer(attrs \\ %{}) do
+    %Composer{}
+    |> Composer.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a composer.
+
+  ## Examples
+
+      iex> update_composer(composer, %{field: new_value})
+      {:ok, %Composer{}}
+
+      iex> update_composer(composer, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_composer(%Composer{} = composer, attrs) do
+    composer
+    |> Composer.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Composer.
+
+  ## Examples
+
+      iex> delete_composer(composer)
+      {:ok, %Composer{}}
+
+      iex> delete_composer(composer)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_composer(%Composer{} = composer) do
+    Repo.delete(composer)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking composer changes.
+
+  ## Examples
+
+      iex> change_composer(composer)
+      %Ecto.Changeset{source: %Composer{}}
+
+  """
+  def change_composer(%Composer{} = composer) do
+    Composer.changeset(composer, %{})
   end
 end

@@ -77,12 +77,14 @@
 		mounted: function(){
 			loadModel('artists');
 			loadModel('genres');
+			loadModel('composers');
 			this.loadMoreTracks();
 		},
 		data: {
 			tracks: null,
 			artists: null,
 			genres: null,
+			composers: null,
 			displayTracks: [],
 			//activeTrackTrackList: the track list when the currently playing track started playing
 			//this is so that when pages are changed, the correct next track will play
@@ -112,6 +114,15 @@
 				}
 				return ret;
 			},
+			composersMap: function(){
+				let ret = new Map();
+				if(this.composers !== null){
+					this.composers.forEach((item)=>{
+						ret.set(item.id, item);
+					});
+				}
+				return ret;
+			},
 			activeTab: function(){
 				return this.path[0];
 			},
@@ -119,7 +130,7 @@
 				return this.path[this.path.length - 1];
 			},
 			isInitialLoadComplete: function(){
-				return this.tracks !== null && this.artists !== null && this.genres !== null;
+				return this.tracks !== null && this.artists !== null && this.genres !== null && this.composers !== null;
 			},
 			isInfiniteScrollDisabled: function(){
 				return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
@@ -171,6 +182,8 @@
 						return this.artists;
 					case 'genres':
 						return this.genres;
+					case 'composers':
+						return this.composers;
 					default:
 						return this.activePageTracks;
 				}
@@ -342,14 +355,15 @@
 			itemFields: function(item){
 				if(this.activePage === 'tracks'){
 					let track = item;
-					let genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : ''; 
+					let genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
+					let composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
 					return [
 						track.title,
 						this.artistsMap.get(track.artist_id).name,
 						track.album_title,
 						this.formatTrackLength(track.length),
 						genre,
-						track.composer,
+						composer,
 						track.bit_rate,
 						track.play_count,
 						track.date_added,
