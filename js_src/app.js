@@ -40,16 +40,10 @@
 		return getJson(url);
 	}
 
-	function getArtists(){
-		let url = `${apiUrlBase}artists`;
+	function loadModel(modelName){
+		let url = `${apiUrlBase}${modelName}`;
 		getJson(url).then((json)=>{
-			app.artists = json.data;
-
-			app.artistsMap = new Map();
-
-			app.artists.forEach((artist)=>{
-				app.artistsMap.set(artist.id, artist);
-			});
+			app[modelName] = json.data;
 		});
 	}
 
@@ -81,13 +75,14 @@
 	var app = new Vue({
 		el: '#app',
 		mounted: function(){
-			getArtists();
+			loadModel('artists');
+			loadModel('genres');
 			this.loadMoreTracks();
 		},
 		data: {
 			tracks: null,
 			artists: null,
-			artistsMap: null,
+			genres: null,
 			displayTracks: [],
 			//activeTrackTrackList: the track list when the currently playing track started playing
 			//this is so that when pages are changed, the correct next track will play
@@ -99,6 +94,24 @@
 			path: ['tracks'],
 		},
 		computed: {
+			artistsMap: function(){
+				let ret = new Map();
+				if(this.artists !== null){
+					this.artists.forEach((item)=>{
+						ret.set(item.id, item);
+					});
+				}
+				return ret;
+			},
+			genresMap: function(){
+				let ret = new Map();
+				if(this.genres !== null){
+					this.genres.forEach((item)=>{
+						ret.set(item.id, item);
+					});
+				}
+				return ret;
+			},
 			activeTab: function(){
 				return this.path[0];
 			},
@@ -106,7 +119,7 @@
 				return this.path[this.path.length - 1];
 			},
 			isInitialLoadComplete: function(){
-				return this.tracks !== null && this.artists !== null && this.artistsMap !== null;
+				return this.tracks !== null && this.artists !== null && this.genres !== null;
 			},
 			isInfiniteScrollDisabled: function(){
 				return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
@@ -156,6 +169,8 @@
 				switch(this.activeTab){
 					case 'artists':
 						return this.artists;
+					case 'genres':
+						return this.genres;
 					default:
 						return this.activePageTracks;
 				}
@@ -327,12 +342,13 @@
 			itemFields: function(item){
 				if(this.activePage === 'tracks'){
 					let track = item;
+					let genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : ''; 
 					return [
 						track.title,
 						this.artistsMap.get(track.artist_id).name,
 						track.album_title,
 						this.formatTrackLength(track.length),
-						track.genre,
+						genre,
 						track.composer,
 						track.bit_rate,
 						track.play_count,
