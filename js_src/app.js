@@ -93,7 +93,7 @@
 			isPlaying: false,
 			elapsedTime: 0,
 			tabs: tabsMap,
-			path: ['tracks'],
+			path: ['artists'],
 		},
 		computed: {
 			artistsMap: function(){
