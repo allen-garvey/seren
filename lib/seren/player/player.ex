@@ -422,4 +422,100 @@ defmodule Seren.Player do
   def change_composer(%Composer{} = composer) do
     Composer.changeset(composer, %{})
   end
+
+  alias Seren.Player.FileType
+
+  @doc """
+  Returns the list of file_types.
+
+  ## Examples
+
+      iex> list_file_types()
+      [%FileType{}, ...]
+
+  """
+  def list_file_types do
+    Repo.all(FileType)
+  end
+
+  @doc """
+  Gets a single file_type.
+
+  Raises `Ecto.NoResultsError` if the File type does not exist.
+
+  ## Examples
+
+      iex> get_file_type!(123)
+      %FileType{}
+
+      iex> get_file_type!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_file_type!(id), do: Repo.get!(FileType, id)
+
+  @doc """
+  Creates a file_type.
+
+  ## Examples
+
+      iex> create_file_type(%{field: value})
+      {:ok, %FileType{}}
+
+      iex> create_file_type(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_file_type(attrs \\ %{}) do
+    %FileType{}
+    |> FileType.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a file_type.
+
+  ## Examples
+
+      iex> update_file_type(file_type, %{field: new_value})
+      {:ok, %FileType{}}
+
+      iex> update_file_type(file_type, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_file_type(%FileType{} = file_type, attrs) do
+    file_type
+    |> FileType.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a FileType.
+
+  ## Examples
+
+      iex> delete_file_type(file_type)
+      {:ok, %FileType{}}
+
+      iex> delete_file_type(file_type)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_file_type(%FileType{} = file_type) do
+    Repo.delete(file_type)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking file_type changes.
+
+  ## Examples
+
+      iex> change_file_type(file_type)
+      %Ecto.Changeset{source: %FileType{}}
+
+  """
+  def change_file_type(%FileType{} = file_type) do
+    FileType.changeset(file_type, %{})
+  end
 end

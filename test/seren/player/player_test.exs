@@ -286,4 +286,64 @@ defmodule Seren.PlayerTest do
       assert %Ecto.Changeset{} = Player.change_composer(composer)
     end
   end
+
+  describe "file_types" do
+    alias Seren.Player.FileType
+
+    @valid_attrs %{name: "some name"}
+    @update_attrs %{name: "some updated name"}
+    @invalid_attrs %{name: nil}
+
+    def file_type_fixture(attrs \\ %{}) do
+      {:ok, file_type} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Player.create_file_type()
+
+      file_type
+    end
+
+    test "list_file_types/0 returns all file_types" do
+      file_type = file_type_fixture()
+      assert Player.list_file_types() == [file_type]
+    end
+
+    test "get_file_type!/1 returns the file_type with given id" do
+      file_type = file_type_fixture()
+      assert Player.get_file_type!(file_type.id) == file_type
+    end
+
+    test "create_file_type/1 with valid data creates a file_type" do
+      assert {:ok, %FileType{} = file_type} = Player.create_file_type(@valid_attrs)
+      assert file_type.name == "some name"
+    end
+
+    test "create_file_type/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Player.create_file_type(@invalid_attrs)
+    end
+
+    test "update_file_type/2 with valid data updates the file_type" do
+      file_type = file_type_fixture()
+      assert {:ok, file_type} = Player.update_file_type(file_type, @update_attrs)
+      assert %FileType{} = file_type
+      assert file_type.name == "some updated name"
+    end
+
+    test "update_file_type/2 with invalid data returns error changeset" do
+      file_type = file_type_fixture()
+      assert {:error, %Ecto.Changeset{}} = Player.update_file_type(file_type, @invalid_attrs)
+      assert file_type == Player.get_file_type!(file_type.id)
+    end
+
+    test "delete_file_type/1 deletes the file_type" do
+      file_type = file_type_fixture()
+      assert {:ok, %FileType{}} = Player.delete_file_type(file_type)
+      assert_raise Ecto.NoResultsError, fn -> Player.get_file_type!(file_type.id) end
+    end
+
+    test "change_file_type/1 returns a file_type changeset" do
+      file_type = file_type_fixture()
+      assert %Ecto.Changeset{} = Player.change_file_type(file_type)
+    end
+  end
 end
