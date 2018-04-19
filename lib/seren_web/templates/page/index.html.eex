@@ -4,6 +4,24 @@
       <li v-for="key in [...tabs.keys()]" v-bind:class="{active: activeTab === key}" @click="changeTab(key)">{{ tabs.get(key).title }}</li>
     </ul>
   </nav>
+  <table class="track-list" v-if="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
+    <thead>
+        <th class="col-play-btn"></th>
+        <template v-for="column in itemColumns">
+          <th @click="sortItems(column.sort)">{{column.title}}</th>
+        </template>
+    </thead>
+    <tbody>
+        <template v-for="(item, i) in items">
+          <tr @dblclick="doubleClickRowAction(item, i)">
+            <td @click="play(item, i, path)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(item)}"></td>
+            <template v-for="field in itemFields(item)">
+              <td>{{field}}</td>
+            </template>
+          </tr>
+        </template>
+    </tbody>
+  </table>
   <div class="media-controls-container">
       <template v-if="activeTrack">
           <div class="active-track-container marquee">
@@ -26,22 +44,4 @@
       </template>
       <div v-if="!isInitialLoadComplete">Loading&hellip;</div>
   </div>
-  <table class="track-list" v-if="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
-    <thead>
-        <th class="col-play-btn"></th>
-        <template v-for="column in itemColumns">
-          <th @click="sortItems(column.sort)">{{column.title}}</th>
-        </template>
-    </thead>
-    <tbody>
-        <template v-for="(item, i) in items">
-          <tr @dblclick="doubleClickRowAction(item, i)">
-            <td @click="play(item, i, path)" class="col-play-btn track-play-button" v-bind:class="{'pause': isTrackPlaying(item)}"></td>
-            <template v-for="field in itemFields(item)">
-              <td>{{field}}</td>
-            </template>
-          </tr>
-        </template>
-    </tbody>
-  </table>
 </div>
