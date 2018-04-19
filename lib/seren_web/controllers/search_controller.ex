@@ -6,7 +6,7 @@ defmodule SerenWeb.SearchController do
   action_fallback SerenWeb.FallbackController
 
   def tracks_for(conn, %{"q" => query}) do
-    tracks = Player.tracks_for_search(query)
+    tracks = Player.tracks_for_search(query, 1000)
     conn
       |> put_view(SerenWeb.TrackView)
       |> SerenWeb.TrackController.index_page(tracks)

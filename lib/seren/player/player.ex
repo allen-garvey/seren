@@ -52,9 +52,9 @@ defmodule Seren.Player do
   @doc """
   Returns list of tracks for search query
   """
-  def tracks_for_search(query) do
+  def tracks_for_search(query, limit) do
     like_query = "%#{String.replace(query, "%", "\\%") |> String.replace("_", "\\_")}%"
-    from(t in Track, join: a in assoc(t, :artist), where: ilike(t.title, ^like_query) or ilike(a.name, ^like_query) or ilike(t.album_title, ^like_query), order_by: [a.name, :album_title, :album_disc_number, :track_number, :title]) 
+    from(t in Track, join: a in assoc(t, :artist), where: ilike(t.title, ^like_query) or ilike(a.name, ^like_query) or ilike(t.album_title, ^like_query), order_by: [a.name, :album_title, :album_disc_number, :track_number, :title], limit: ^limit) 
       |> Repo.all
   end
 
