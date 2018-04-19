@@ -1,4 +1,8 @@
 <div id="app">
+  <div class="search-bar-container">
+    <input type="search" placeholder="Search tracks" v-model="searchQuery" @keyup.enter="searchForTracks" aria-labelledby="Search tracks"/>
+    <button @click="searchForTracks">Search</button>
+  </div>
   <nav class="nav">
     <ul class="nav-list nav-pills">
       <li v-for="key in [...tabs.keys()]" v-bind:class="{active: activeTab === key}" @click="changeTab(key)">{{ tabs.get(key).title }}</li>

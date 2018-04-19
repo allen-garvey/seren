@@ -1,7 +1,7 @@
 (function(Vue, fetch){
-	var apiUrlBase = '/api/';
+	const apiUrlBase = '/api/';
 
-	var audio = new Audio();
+	const audio = new Audio();
 	audio.addEventListener('ended', function(){
 		if(app.hasNextTrack){
 			app.playNextTrack();
@@ -11,16 +11,17 @@
 		}
 	});
 
-	var elapsedTimeTimer = null;
+	let elapsedTimeTimer = null;
 
 	//navigation tabs
 	//note: as of now Maps are not reactive in Vue
-	var tabsMap = new Map();
+	const tabsMap = new Map();
 	tabsMap.set('artists', {title: 'Artists'});
 	tabsMap.set('albums', {title: 'Albums'});
 	tabsMap.set('composers', {title: 'Composers'});
 	tabsMap.set('genres', {title: 'Genres'});
 	tabsMap.set('tracks', {title: 'Tracks'});
+	tabsMap.set('search', {title: 'Search'});
 
 	//based on: https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
 	function padNumber(n, width, z) {
@@ -36,12 +37,12 @@
 	}
 
 	function getTracksForItem(itemType, itemId){
-		let url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
+		const url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
 		return getJson(url);
 	}
 
 	function loadModel(modelName){
-		let url = `${apiUrlBase}${modelName}`;
+		const url = `${apiUrlBase}${modelName}`;
 		getJson(url).then((json)=>{
 			app[modelName] = json.data;
 		});
@@ -94,6 +95,8 @@
 			elapsedTime: 0,
 			tabs: tabsMap,
 			path: ['artists'],
+			searchQuery: '',
+			searchResults: [],
 		},
 		computed: {
 			artistsMap: function(){
@@ -171,6 +174,9 @@
 				if(this.activeTab !== 'tracks' && this.activePage === 'tracks'){
 					return this.displayTracks;
 				}
+				if(this.activeTab === 'search'){
+					return this.searchResults;
+				}
 				return this.tracks;	
 			},
 			items: function(){
@@ -189,7 +195,7 @@
 				}
 			},
 			itemColumns: function(){
-				if(this.activePage === 'tracks'){
+				if(this.isTrackPage){
 					return [
 						{title: 'Title', sort: 'title'},
 						{title: 'Artist', sort: 'artist'},
@@ -203,6 +209,9 @@
 					];
 				}
 				return [{title: 'Name', sort: 'name'}];
+			},
+			isTrackPage: function(){
+				return this.activePage === 'tracks' || this.activePage === 'search';
 			},
 		},
 		methods: {
@@ -229,7 +238,7 @@
 				return this.isPlaying && this.activeTrack && track.id === this.activeTrack.track.id;
 			},
 			doubleClickRowAction: function(item, rowIndex){
-				if(this.activePage === 'tracks'){
+				if(this.isTrackPage){
 					this.play(item, rowIndex, this.path);
 				}
 				else{
@@ -353,7 +362,7 @@
 				});
 			},
 			itemFields: function(item){
-				if(this.activePage === 'tracks'){
+				if(this.isTrackPage){
 					let track = item;
 					let genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
 					let composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
@@ -384,6 +393,13 @@
 					return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
 				}
 				return `${minutes}:${padNumber(seconds, 2)}`;
+			},
+			searchForTracks: function(){
+				const searchUrl = `${apiUrlBase}search/tracks?q=${encodeURIComponent(this.searchQuery)}`;
+				getJson(searchUrl).then((json)=>{
+					this.searchResults = json.data;
+					this.path = ['search'];
+				});
 			},
 		}
 	});
