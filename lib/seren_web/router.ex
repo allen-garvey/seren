@@ -31,6 +31,8 @@ defmodule SerenWeb.Router do
     get "/artists/:id/tracks",    ArtistController,   :tracks_for
     get "/genres/:id/tracks",     GenreController,    :tracks_for
     get "/composers/:id/tracks",  ComposerController, :tracks_for
+
+    get "/search/tracks",         SearchController,    :tracks_for
   end
 
 end
