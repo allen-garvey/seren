@@ -105,6 +105,8 @@
 			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
+			previousSortKey: null,
+			sortAsc: true,
 		},
 		computed: {
 			artistsMap: function(){
@@ -341,9 +343,21 @@
 				this.play(track, trackIndex, this.activeTrack.path);
 			},
 			sortItems: function(key){
+				if(key !== this.previousSortKey){
+					this.sortAsc = true;
+				}
+				else{
+					this.sortAsc = !this.sortAsc;
+				}
+				this.previousSortKey = key;
+
 				this.items = this.items.sort((a,b)=>{
 					let value1 = a[key];
 					let value2 = b[key];
+					if(!this.sortAsc){
+						value1 = b[key];
+						value2 = a[key];
+					}
 					if(isEmpty(value1)){
 						if(isEmpty(value2)){
 							return 0;
