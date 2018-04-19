@@ -73,6 +73,14 @@
 		return value === null || value === undefined;
 	}
 
+	function formatUtcDateToUs(date){
+		if(!date){
+			return date;
+		}
+		const dateSplit = date.split('-');
+		return `${dateSplit[1]}/${dateSplit[2]}/${dateSplit[0]}`;
+	}
+
 	var app = new Vue({
 		el: '#app',
 		mounted: function(){
@@ -336,10 +344,10 @@
 				this.items = this.items.sort((a,b)=>{
 					let value1 = a[key];
 					let value2 = b[key];
-					if(isEmpty(value1) && isEmpty(value2)){
-						return 0;
-					}
-					else if(isEmpty(value1)){
+					if(isEmpty(value1)){
+						if(isEmpty(value2)){
+							return 0;
+						}
 						return -1;
 					}
 					else if(isEmpty(value2)){
@@ -375,7 +383,7 @@
 						composer,
 						track.bit_rate,
 						track.play_count,
-						track.date_added,
+						formatUtcDateToUs(track.date_added),
 					];
 				}
 				return [item.name];

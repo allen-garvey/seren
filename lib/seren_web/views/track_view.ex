@@ -17,7 +17,7 @@ defmodule SerenWeb.TrackView do
       title: track.title,
       artist_id: track.artist_id,
       genre_id: track.genre_id,
-      date_added: SharedView.datetime_to_us_date(track.date_added),
+      date_added: SharedView.datetime_to_utc_date(track.date_added),
       file_path: track.file_path,
       # file_type_id: track.file_type_id,
       length: track.length,
@@ -26,7 +26,7 @@ defmodule SerenWeb.TrackView do
       composer_id: track.composer_id,
       artwork_count: track.artwork_count,
       play_count: track.play_count,
-      play_date: SharedView.datetime_to_us_date(track.play_date)
+      play_date: SharedView.datetime_to_utc_date(track.play_date)
     }
   end
 
