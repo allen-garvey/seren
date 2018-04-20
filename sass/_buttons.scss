@@ -3,7 +3,12 @@
 	background: rgba(0,0,0,0);
 	border: solid 1px $accent_color_text;
 
-	&:hover{
+	&[disabled]{
+		color: $outline_button_disabled_color;
+		border-color: $outline_button_disabled_color;
+		cursor: not-allowed;
+	}
+	&:hover:enabled{
 		color: white;
 		background: $accent_color_text;
 	}
