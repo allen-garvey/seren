@@ -10,10 +10,8 @@
 	list-style-type: none;
 }
 
-$nav_pills_color: #007bff;
-
 .nav-pills li{
-	color: $nav_pills_color;
+	color: $accent_color_text;
 	cursor: pointer;
 	padding: 0.5em 1em;
 }
@@ -23,7 +21,7 @@ $nav_pills_color: #007bff;
 }
 
 .nav-pills li.active{
-	background: $nav_pills_color;
+	background: $accent_color_text;
 	color: white;
 	border-radius: 4px;
 }

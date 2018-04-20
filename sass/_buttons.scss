@@ -1,0 +1,15 @@
+.outline-button {
+	color: $accent_color_text;
+	background: rgba(0,0,0,0);
+	border: solid 1px $accent_color_text;
+
+	&:hover{
+		color: white;
+		background: $accent_color_text;
+	}
+	&:active{
+		border-color: $accent_color_text_darker;
+		color: white;
+		background: $accent_color_text_darker;
+	}
+}
