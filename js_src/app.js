@@ -223,6 +223,9 @@
 			isTrackPage: function(){
 				return this.activePage === 'tracks' || this.activePage === 'search';
 			},
+			isSearchEnabled: function(){
+				return !!this.searchQuery;
+			},
 		},
 		methods: {
 			changeTab: function(tabKey){
@@ -417,6 +420,9 @@
 				return `${minutes}:${padNumber(seconds, 2)}`;
 			},
 			searchForTracks: function(){
+				if(!this.isSearchEnabled){
+					return;
+				}
 				const searchUrl = `${apiUrlBase}search/tracks?q=${encodeURIComponent(this.searchQuery)}`;
 				getJson(searchUrl).then((json)=>{
 					this.searchResults = json.data;
