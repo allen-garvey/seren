@@ -2,6 +2,7 @@
 	color: $accent_color_text;
 	background: rgba(0,0,0,0);
 	border: solid 1px $accent_color_text;
+	border-radius: 2px;
 
 	&[disabled]{
 		color: $outline_button_disabled_color;
