@@ -1,13 +1,11 @@
 "use strict";
 
-var path = require('path');
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-// var uglify = require('gulp-uglify');
-// var rename = require('gulp-rename');
-var sass = require('gulp-sass');
+const path = require('path');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
+const sass = require('gulp-sass');
 
-var config = require(path.join(__dirname, 'gulp-config.js'));
+const config = require(path.join(__dirname, 'gulp-config.js'));
 
 /*
 * JavaScript Tasks
@@ -29,7 +27,7 @@ gulp.task('concatScripts', function(){
 * Sass/Styles Tasks
 */
 gulp.task('sass', function() {
-    gulp.src(config.styles.SOURCE_DIR + '**/*.scss')
+    return gulp.src(config.styles.SOURCE_DIR + '**/*.scss')
         .pipe(sass(config.styles.sass_options).on('error', sass.logError))
         .pipe(gulp.dest(config.styles.DEST_DIR));
 });
@@ -39,18 +37,23 @@ gulp.task('sass', function() {
 * Watch tasks
 */
 
-gulp.task('watchScripts', ['concatScripts'], function(){
-	gulp.watch(config.js.SOURCE_DIR + '**/*.js', ['concatScripts']);
+gulp.task('watchScripts', function(){
+	gulp.watch(config.js.SOURCE_DIR + '**/*.js', gulp.series('concatScripts'));
 });
 
-gulp.task('watchSass', ['sass'], function() {
-    gulp.watch(config.styles.SOURCE_DIR + '**/*.scss', ['sass']);
+gulp.task('watchSass', function() {
+    gulp.watch(config.styles.SOURCE_DIR + '**/*.scss', gulp.series('sass'));
 });
 
 
 /*
 * Main gulp tasks
 */
-gulp.task('watch', ['watchSass', 'watchScripts']);
-gulp.task('build', ['sass', 'concatScripts']);
-gulp.task('default', ['build']);
+//have to put watchSass sass task dependency here, since if we put it directly on the watchSass task, it will not watch, instead just run once
+gulp.task('watch', gulp.parallel([
+                                    gulp.series(['sass', 'watchSass']), 
+                                    gulp.series(['concatScripts', 'watchScripts'])
+                                ]
+                            ));
+gulp.task('build', gulp.parallel(['sass', 'concatScripts']));
+gulp.task('default', gulp.parallel(['build']));

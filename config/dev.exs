@@ -11,7 +11,7 @@ config :seren, SerenWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [npm: ["run", "watch"]]
+  watchers: [npm: ["run", "gulp:watch"]]
 
 # ## SSL Support
 #
