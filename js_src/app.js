@@ -1,86 +1,29 @@
 const Vue = require('vue');
-var infiniteScroll = require('vue-infinite-scroll');
+const infiniteScroll = require('vue-infinite-scroll');
 const Models = require('./models');
+const ArrayUtil = require('./array-util');
+const ApiHelpers = require('./api-helpers');
+const Util = require('./util');
 
-const apiUrlBase = '/api/';
-
-const audio = new Audio();
-audio.addEventListener('ended', function(){
-	if(app.hasNextTrack){
-		app.playNextTrack();
-	}
-	else{
-		app.displayTrackStopped();
-	}
-});
-
+let audio = null;
 let elapsedTimeTimer = null;
 
-//based on: https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
-function padNumber(n, width, z) {
-	z = z || '0';
-	n = n + '';
-	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
-
-function getJson(url){
-	return fetch(url).then((response)=>{ 
-		return response.json();
-	});
-}
-
-function getTracksForItem(itemType, itemId){
-	const url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
-	return getJson(url);
-}
-
-function loadModel(modelName){
-	const url = `${apiUrlBase}${modelName}`;
-	getJson(url).then((json)=>{
-		app[modelName] = json.data;
-	});
-}
-
-//only compares arrays of primitives (strings, booleans, numbers)
-//also will fail on NaN
-function areArraysEqual(a1, a2){
-	if(a1 === a2){
-		return true;
-	}
-	if(a1 === null || a2 === null){
-		return false;
-	}
-	if(a1.length !== a2.length){
-		return false;
-	}
-
-	for(let i=0;i<a1.length;i++){
-		if(a1[i] !== a2[i]){
-			return false;
-		}
-	}
-
-	return true;
-}
-function isEmpty(value){
-	return value === null || value === undefined;
-}
-
-function formatUtcDateToUs(date){
-	if(!date){
-		return date;
-	}
-	const dateSplit = date.split('-');
-	return `${dateSplit[1]}/${dateSplit[2]}/${dateSplit[0]}`;
-}
-
-var app = new Vue({
+new Vue({
 	el: '#app',
 	directives: {infiniteScroll},
-	mounted: function(){
-		loadModel('artists');
-		loadModel('genres');
-		loadModel('composers');
+	created: function(){
+		audio = new Audio();
+		audio.addEventListener('ended', ()=>{
+			if(this.hasNextTrack){
+				this.playNextTrack();
+			}
+			else{
+				this.displayTrackStopped();
+			}
+		});
+		ApiHelpers.loadModel('artists', this);
+		ApiHelpers.loadModel('genres', this);
+		ApiHelpers.loadModel('composers', this);
 		this.loadMoreTracks();
 	},
 	data: {
@@ -200,19 +143,9 @@ var app = new Vue({
 		},
 		itemColumns: function(){
 			if(this.isTrackPage){
-				return [
-					{title: 'Title', sort: 'title'},
-					{title: 'Artist', sort: 'artist'},
-					{title: 'Album', sort: 'album_title'},
-					{title: 'Length', sort: 'length'},
-					{title: 'Genre', sort: 'Genre'},
-					{title: 'Composer', sort: 'Composer'},
-					{title: 'Bit Rate', sort: 'Bit Rate'},
-					{title: 'Play Count', sort: 'play_count'},
-					{title: 'Date Added', sort: 'date_added'},
-				];
+				return Models.trackItemColumns;
 			}
-			return [{title: 'Name', sort: 'name'}];
+			return Models.defaultItemColumns;
 		},
 		isTrackPage: function(){
 			return this.activePage === 'tracks' || this.activePage === 'search';
@@ -226,13 +159,13 @@ var app = new Vue({
 			this.path = [tabKey];
 		},
 		loadMoreTracks: function(){
-			let offset = this.tracks ? this.tracks.length : false;
+			const offset = this.tracks ? this.tracks.length : false;
 
-			let url = `${apiUrlBase}tracks?limit=100`;
+			let url = `${ApiHelpers.apiUrlBase}tracks?limit=100`;
 			if(offset){
 				url = `${url}&offset=${offset}`;
 			}
-			getJson(url).then((json)=>{
+			ApiHelpers.getJson(url).then((json)=>{
 				if(offset){
 					this.tracks = this.tracks.concat(json.data);
 				}
@@ -254,13 +187,13 @@ var app = new Vue({
 		},
 		displayTracksForItem: function(item){
 			this.displayTracks = [];
-			getTracksForItem(this.activeTab, item.id).then((json)=>{
+			ApiHelpers.getTracksForItem(this.activeTab, item.id).then((json)=>{
 				this.displayTracks = json.data;
 			});
 			this.path = this.path.concat([item.id, 'tracks']);
 		},
 		play: function(track, trackIndex, trackPath){
-			if(!this.activeTrack || !areArraysEqual(this.activeTrack.path, trackPath)){
+			if(!this.activeTrack || !ArrayUtil.areArraysEqual(this.activeTrack.path, trackPath)){
 				//if we are on tracks page, we only want to reference the tracks,
 				//otherwise we want to copy it
 				if(this.activePage === 'tracks'){
@@ -347,38 +280,7 @@ var app = new Vue({
 				this.sortAsc = !this.sortAsc;
 			}
 			this.previousSortKey = key;
-
-			this.items = this.items.sort((a,b)=>{
-				let value1 = a[key];
-				let value2 = b[key];
-				if(!this.sortAsc){
-					value1 = b[key];
-					value2 = a[key];
-				}
-				if(isEmpty(value1)){
-					if(isEmpty(value2)){
-						return 0;
-					}
-					return -1;
-				}
-				else if(isEmpty(value2)){
-					return 1;
-				}
-				if(typeof value1 === 'number'){
-					return value1 - value2;
-				}
-				if(typeof value1 === 'string'){
-					value1 = value1.toUpperCase();
-					value2 = value2.toUpperCase();
-				}
-				if(value1 > value2){
-					return 1;
-				}
-				else if(value1 < value2){
-					return -1;
-				}
-				return 0;
-			});
+			this.items = Util.sortItems(this.items, key, this.sortAsc);
 		},
 		itemFields: function(item){
 			if(this.isTrackPage){
@@ -394,31 +296,18 @@ var app = new Vue({
 					composer,
 					track.bit_rate,
 					track.play_count,
-					formatUtcDateToUs(track.date_added),
+					Util.formatUtcDateToUs(track.date_added),
 				];
 			}
 			return [item.name];
 		},
-		formatTrackLength: function(trackLength){
-			let hours = 0;
-			let totalSeconds = Math.floor(trackLength / 1000);
-			let minutes = Math.floor(totalSeconds / 60);
-			if(minutes > 59){
-				hours = Math.floor(minutes / 60);
-				minutes = minutes % 60;
-			}
-			let seconds = totalSeconds % 60;
-			if(hours > 0){
-				return `${hours}:${padNumber(minutes, 2)}:${padNumber(seconds, 2)}`;
-			}
-			return `${minutes}:${padNumber(seconds, 2)}`;
-		},
+		formatTrackLength: Util.formatTrackLength,
 		searchForTracks: function(){
 			if(!this.isSearchEnabled){
 				return;
 			}
-			const searchUrl = `${apiUrlBase}search/tracks?q=${encodeURIComponent(this.searchQuery)}`;
-			getJson(searchUrl).then((json)=>{
+			const searchUrl = `${ApiHelpers.apiUrlBase}search/tracks?q=${encodeURIComponent(this.searchQuery)}`;
+			ApiHelpers.getJson(searchUrl).then((json)=>{
 				this.searchResults = json.data;
 				this.path = ['search'];
 			});

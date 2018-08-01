@@ -12,8 +12,30 @@ function getTabsMap(){
     return tabsMap;
 }
 
+//item columns for tracks
+function getTrackItemColumns(){
+    return [
+        {title: 'Title', sort: 'title'},
+        {title: 'Artist', sort: 'artist'},
+        {title: 'Album', sort: 'album_title'},
+        {title: 'Length', sort: 'length'},
+        {title: 'Genre', sort: 'Genre'},
+        {title: 'Composer', sort: 'Composer'},
+        {title: 'Bit Rate', sort: 'Bit Rate'},
+        {title: 'Play Count', sort: 'play_count'},
+        {title: 'Date Added', sort: 'date_added'},
+    ];
+}
+
+//item columns for everything except tracks
+function getDefaultItemColumns(){
+    return [{title: 'Name', sort: 'name'}];
+}
+
 
 
 module.exports = {
     tabsMap: getTabsMap(),
+    trackItemColumns: getTrackItemColumns(),
+    defaultItemColumns: getDefaultItemColumns(),
 };
