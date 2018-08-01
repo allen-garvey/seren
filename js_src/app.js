@@ -259,7 +259,7 @@
 				}
 			},
 			displayTracksForItem: function(item){
-				displayTracks = [];
+				this.displayTracks = [];
 				getTracksForItem(this.activeTab, item.id).then((json)=>{
 					this.displayTracks = json.data;
 				});
