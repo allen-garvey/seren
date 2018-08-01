@@ -53,3 +53,6 @@ Thumbs.db
 *.otf
 *.eot
 *.woff
+
+#elixir plugin files
+.elixir_ls/*
