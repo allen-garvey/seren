@@ -11,8 +11,6 @@
 
   <body>
     <%= render @view_module, @view_template, assigns %>
-    <script src="<%= static_path(@conn, "/js/lib/vue.min.js") %>"></script>
-    <script src="<%= static_path(@conn, "/js/lib/vue-infinite-scroll.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
