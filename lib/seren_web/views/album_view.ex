@@ -11,7 +11,10 @@ defmodule SerenWeb.AlbumView do
   end
 
   def render("album.json", %{album: album}) do
-    %{id: album.id,
-      title: album.title}
+    %{
+      id: album.id,
+      title: album.title,
+      artist_id: album.artist_id,
+    }
   end
 end
