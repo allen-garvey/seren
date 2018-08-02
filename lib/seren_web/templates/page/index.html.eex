@@ -8,7 +8,7 @@
       <li v-for="key in [...tabs.keys()]" v-bind:class="{active: activeTab === key}" @click="changeTab(key)">{{ tabs.get(key).title }}</li>
     </ul>
   </nav>
-  <table class="track-list" v-if="isInitialLoadComplete" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
+  <table class="track-list" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
     <thead>
         <th class="col-play-btn"></th>
         <template v-for="column in itemColumns">
