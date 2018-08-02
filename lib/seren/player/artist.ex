@@ -10,6 +10,7 @@ defmodule Seren.Player.Artist do
     timestamps()
 
     has_many :tracks, Seren.Player.Track
+    has_many :albums, Seren.Player.Album
   end
 
   @doc false

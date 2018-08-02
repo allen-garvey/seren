@@ -27,6 +27,7 @@ defmodule SerenWeb.Router do
     resources "/genres",      GenreController,    only: [:index, :show]
     resources "/composers",   ComposerController, only: [:index, :show]
     resources "/file_types",  FileTypeController, only: [:index, :show]
+    resources "/albums",      AlbumController,    only: [:index, :show]
 
     get "/artists/:id/tracks",    ArtistController,   :tracks_for
     get "/genres/:id/tracks",     GenreController,    :tracks_for

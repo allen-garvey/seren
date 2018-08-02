@@ -346,4 +346,64 @@ defmodule Seren.PlayerTest do
       assert %Ecto.Changeset{} = Player.change_file_type(file_type)
     end
   end
+
+  describe "albums" do
+    alias Seren.Player.Album
+
+    @valid_attrs %{title: "some title"}
+    @update_attrs %{title: "some updated title"}
+    @invalid_attrs %{title: nil}
+
+    def album_fixture(attrs \\ %{}) do
+      {:ok, album} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Player.create_album()
+
+      album
+    end
+
+    test "list_albums/0 returns all albums" do
+      album = album_fixture()
+      assert Player.list_albums() == [album]
+    end
+
+    test "get_album!/1 returns the album with given id" do
+      album = album_fixture()
+      assert Player.get_album!(album.id) == album
+    end
+
+    test "create_album/1 with valid data creates a album" do
+      assert {:ok, %Album{} = album} = Player.create_album(@valid_attrs)
+      assert album.title == "some title"
+    end
+
+    test "create_album/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Player.create_album(@invalid_attrs)
+    end
+
+    test "update_album/2 with valid data updates the album" do
+      album = album_fixture()
+      assert {:ok, album} = Player.update_album(album, @update_attrs)
+      assert %Album{} = album
+      assert album.title == "some updated title"
+    end
+
+    test "update_album/2 with invalid data returns error changeset" do
+      album = album_fixture()
+      assert {:error, %Ecto.Changeset{}} = Player.update_album(album, @invalid_attrs)
+      assert album == Player.get_album!(album.id)
+    end
+
+    test "delete_album/1 deletes the album" do
+      album = album_fixture()
+      assert {:ok, %Album{}} = Player.delete_album(album)
+      assert_raise Ecto.NoResultsError, fn -> Player.get_album!(album.id) end
+    end
+
+    test "change_album/1 returns a album changeset" do
+      album = album_fixture()
+      assert %Ecto.Changeset{} = Player.change_album(album)
+    end
+  end
 end
