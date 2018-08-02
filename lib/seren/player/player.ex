@@ -49,6 +49,11 @@ defmodule Seren.Player do
       |> Repo.all
   end
 
+  def tracks_for_album(id) do
+    from(t in Track, join: artist in assoc(t, :artist), where: t.album_id == ^id, order_by: [:album_disc_number, :track_number, artist.name, :title])
+      |> Repo.all
+  end
+
   @doc """
   Returns list of tracks for search query
   """
@@ -151,7 +156,7 @@ defmodule Seren.Player do
 
   """
   def list_artists do
-    from(Artist, order_by: :name) 
+    from(Artist, order_by: :name)
       |> Repo.all
   end
 
@@ -250,7 +255,7 @@ defmodule Seren.Player do
 
   """
   def list_genres do
-    from(Genre, order_by: :name) 
+    from(Genre, order_by: :name)
       |> Repo.all
   end
 
@@ -347,7 +352,7 @@ defmodule Seren.Player do
 
   """
   def list_composers do
-    from(Composer, order_by: :name) 
+    from(Composer, order_by: :name)
       |> Repo.all
   end
 

@@ -11,6 +11,13 @@ defmodule SerenWeb.AlbumController do
     render(conn, "index.json", albums: albums)
   end
 
+  def tracks_for(conn, %{"id" => id}) do
+    tracks = Player.tracks_for_album(id)
+    conn
+      |> put_view(SerenWeb.TrackView)
+      |> SerenWeb.TrackController.index_page(tracks)
+  end
+
   def create(conn, %{"album" => album_params}) do
     with {:ok, %Album{} = album} <- Player.create_album(album_params) do
       conn
