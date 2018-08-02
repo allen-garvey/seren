@@ -22,12 +22,12 @@ defmodule Seren.Player do
   end
 
   def list_tracks(limit) do
-    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), limit: ^limit, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
+    from(t in Track, join: artist in assoc(t, :artist), left_join: album in assoc(t, :album), limit: ^limit, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def list_tracks(limit, offset) do
-    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), limit: ^limit, offset: ^offset, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
+    from(t in Track, join: artist in assoc(t, :artist), left_join: album in assoc(t, :album), limit: ^limit, offset: ^offset, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
@@ -35,17 +35,17 @@ defmodule Seren.Player do
   Returns list of tracks for various models
   """
   def tracks_for_artist(id) do
-    from(t in Track, where: t.artist_id == ^id, join: album in assoc(t, :album), order_by: [album.title, :album_disc_number, :track_number, :title])
+    from(t in Track, where: t.artist_id == ^id, left_join: album in assoc(t, :album), order_by: [album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def tracks_for_genre(id) do
-    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), where: t.genre_id == ^id, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
+    from(t in Track, join: artist in assoc(t, :artist), left_join: album in assoc(t, :album), where: t.genre_id == ^id, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def tracks_for_composer(id) do
-    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), where: t.composer_id == ^id, order_by: [album.title, :album_disc_number, :track_number, artist.name, :title])
+    from(t in Track, join: artist in assoc(t, :artist), left_join: album in assoc(t, :album), where: t.composer_id == ^id, order_by: [album.title, :album_disc_number, :track_number, artist.name, :title])
       |> Repo.all
   end
 

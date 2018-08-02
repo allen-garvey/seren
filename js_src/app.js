@@ -279,10 +279,11 @@ new Vue({
 				const track = item;
 				const genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
 				const composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
+				const albumTitle = track.album_id !== null ? this.albumsMap.get(track.album_id).title : '';
 				return [
 					track.title,
 					this.artistsMap.get(track.artist_id).name,
-					this.albumsMap.get(track.album_id).title,
+					albumTitle,
 					this.formatTrackLength(track.length),
 					genre,
 					composer,
