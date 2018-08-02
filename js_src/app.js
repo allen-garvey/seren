@@ -24,11 +24,13 @@ new Vue({
 		ApiHelpers.loadModel('artists', this);
 		ApiHelpers.loadModel('genres', this);
 		ApiHelpers.loadModel('composers', this);
+		ApiHelpers.loadModel('albums', this);
 		this.loadMoreTracks();
 	},
 	data: {
 		tracks: null,
 		artists: null,
+		albums: null,
 		genres: null,
 		composers: null,
 		displayTracks: [],
@@ -47,31 +49,16 @@ new Vue({
 	},
 	computed: {
 		artistsMap: function(){
-			let ret = new Map();
-			if(this.artists !== null){
-				this.artists.forEach((item)=>{
-					ret.set(item.id, item);
-				});
-			}
-			return ret;
+			return Models.mapForItems(this.artists);
+		},
+		albumsMap: function(){
+			return Models.mapForItems(this.albums);
 		},
 		genresMap: function(){
-			let ret = new Map();
-			if(this.genres !== null){
-				this.genres.forEach((item)=>{
-					ret.set(item.id, item);
-				});
-			}
-			return ret;
+			return Models.mapForItems(this.genres);
 		},
 		composersMap: function(){
-			let ret = new Map();
-			if(this.composers !== null){
-				this.composers.forEach((item)=>{
-					ret.set(item.id, item);
-				});
-			}
-			return ret;
+			return Models.mapForItems(this.composers);
 		},
 		activeTab: function(){
 			return this.path[0];
@@ -80,7 +67,7 @@ new Vue({
 			return this.path[this.path.length - 1];
 		},
 		isInitialLoadComplete: function(){
-			return this.tracks !== null && this.artists !== null && this.genres !== null && this.composers !== null;
+			return this.tracks !== null && this.artists !== null && this.genres !== null && this.composers !== null && this.albums !== null;
 		},
 		isInfiniteScrollDisabled: function(){
 			return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
@@ -137,6 +124,8 @@ new Vue({
 					return this.genres;
 				case 'composers':
 					return this.composers;
+				case 'albums':
+					return this.albums;
 				default:
 					return this.activePageTracks;
 			}
@@ -144,6 +133,9 @@ new Vue({
 		itemColumns: function(){
 			if(this.isTrackPage){
 				return Models.trackItemColumns;
+			}
+			else if(this.activePage === 'albums'){
+				return Models.albumItemColumns;
 			}
 			return Models.defaultItemColumns;
 		},
@@ -284,19 +276,26 @@ new Vue({
 		},
 		itemFields: function(item){
 			if(this.isTrackPage){
-				let track = item;
-				let genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
-				let composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
+				const track = item;
+				const genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
+				const composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
 				return [
 					track.title,
 					this.artistsMap.get(track.artist_id).name,
-					track.album_title,
+					this.albumsMap.get(track.album_id).title,
 					this.formatTrackLength(track.length),
 					genre,
 					composer,
 					track.bit_rate,
 					track.play_count,
 					Util.formatUtcDateToUs(track.date_added),
+				];
+			}
+			else if(this.activePage === 'albums'){
+				const album = item;
+				return [
+					album.title,
+					this.artistsMap.get(album.artist_id).name,
 				];
 			}
 			return [item.name];

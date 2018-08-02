@@ -27,9 +27,26 @@ function getTrackItemColumns(){
     ];
 }
 
-//item columns for everything except tracks
+//item columns for everything except tracks and albums
 function getDefaultItemColumns(){
     return [{title: 'Name', sort: 'name'}];
+}
+
+function getAlbumItemColumns(){
+    return [
+                {title: 'Title', sort: 'title'},
+                {title: 'Artist', sort: 'artist'},
+            ];
+}
+
+function mapForItems(items){
+    const ret = new Map();
+    if(items !== null){
+        items.forEach((item)=>{
+            ret.set(item.id, item);
+        });
+    }
+    return ret;
 }
 
 
@@ -38,4 +55,6 @@ module.exports = {
     tabsMap: getTabsMap(),
     trackItemColumns: getTrackItemColumns(),
     defaultItemColumns: getDefaultItemColumns(),
+    albumItemColumns: getAlbumItemColumns(),
+    mapForItems,
 };
