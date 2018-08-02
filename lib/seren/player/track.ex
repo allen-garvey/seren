@@ -5,10 +5,8 @@ defmodule Seren.Player.Track do
 
 
   schema "tracks" do
-    field :album_artist, :string
     field :album_disc_count, :integer
     field :album_disc_number, :integer
-    field :album_title, :string
     field :album_track_count, :integer
     field :artwork_count, :integer
     field :bit_rate, :integer
@@ -37,8 +35,8 @@ defmodule Seren.Player.Track do
   @doc false
   def changeset(%Track{} = track, attrs) do
     track
-    |> cast(attrs, [:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :relase_year, :album_title, :album_disc_number, :album_disc_count, :album_artist, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :genre_id, :composer_id, :file_type_id, :album_id])
-    |> validate_required([:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :relase_year, :album_title, :album_disc_number, :album_disc_count, :album_artist, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :file_type_id])
+    |> cast(attrs, [:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :relase_year, :album_disc_number, :album_disc_count, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :genre_id, :composer_id, :file_type_id, :album_id])
+    |> validate_required([:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :relase_year, :album_disc_number, :album_disc_count, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :file_type_id])
     |> foreign_key_constraint(:artist_id)
     |> assoc_constraint(:artist)
     |> foreign_key_constraint(:album_id)
