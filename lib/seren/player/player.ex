@@ -22,12 +22,12 @@ defmodule Seren.Player do
   end
 
   def list_tracks(limit) do
-    from(t in Track, join: a in assoc(t, :artist), limit: ^limit, order_by: [a.name, :album_title, :album_disc_number, :track_number, :title]) 
+    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), limit: ^limit, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def list_tracks(limit, offset) do
-    from(t in Track, join: a in assoc(t, :artist), limit: ^limit, offset: ^offset, order_by: [a.name, :album_title, :album_disc_number, :track_number, :title]) 
+    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), limit: ^limit, offset: ^offset, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
@@ -35,17 +35,17 @@ defmodule Seren.Player do
   Returns list of tracks for various models
   """
   def tracks_for_artist(id) do
-    from(t in Track, where: t.artist_id == ^id, order_by: [:album_title, :album_disc_number, :track_number, :title])
+    from(t in Track, where: t.artist_id == ^id, join: album in assoc(t, :album), order_by: [album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def tracks_for_genre(id) do
-    from(t in Track, join: a in assoc(t, :artist), where: t.genre_id == ^id, order_by: [a.name, :album_title, :album_disc_number, :track_number, :title])
+    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), where: t.genre_id == ^id, order_by: [artist.name, album.title, :album_disc_number, :track_number, :title])
       |> Repo.all
   end
 
   def tracks_for_composer(id) do
-    from(t in Track, join: a in assoc(t, :artist), where: t.composer_id == ^id, order_by: [:album_title, :album_disc_number, :track_number, a.name, :title])
+    from(t in Track, join: artist in assoc(t, :artist), join: album in assoc(t, :album), where: t.composer_id == ^id, order_by: [album.title, :album_disc_number, :track_number, artist.name, :title])
       |> Repo.all
   end
 
@@ -54,7 +54,7 @@ defmodule Seren.Player do
   """
   def tracks_for_search(query, limit) do
     like_query = "%#{String.replace(query, "%", "\\%") |> String.replace("_", "\\_")}%"
-    from(t in Track, join: a in assoc(t, :artist), left_join: c in assoc(t, :composer), where: ilike(t.title, ^like_query) or ilike(a.name, ^like_query) or ilike(t.album_title, ^like_query) or ilike(c.name, ^like_query), order_by: [a.name, :album_title, :album_disc_number, :track_number, :title], limit: ^limit) 
+    from(t in Track, join: a in assoc(t, :artist), left_join: c in assoc(t, :composer), where: ilike(t.title, ^like_query) or ilike(a.name, ^like_query) or ilike(t.album_title, ^like_query) or ilike(c.name, ^like_query), order_by: [a.name, :album_title, :album_disc_number, :track_number, :title], limit: ^limit)
       |> Repo.all
   end
 
