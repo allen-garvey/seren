@@ -23,7 +23,7 @@ function getTrackItemColumns(){
         {title: 'Length', sort: 'length'},
         {title: 'Genre', sort: 'Genre'},
         {title: 'Composer', sort: 'Composer'},
-        {title: 'Bit Rate', sort: 'Bit Rate'},
+        {title: 'Bit Rate', sort: 'bit_rate'},
         {title: 'Play Count', sort: 'play_count'},
         {title: 'Date Added', sort: 'date_added'},
     ];
