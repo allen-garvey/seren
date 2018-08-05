@@ -272,7 +272,7 @@ new Vue({
 				this.sortAsc = !this.sortAsc;
 			}
 			this.previousSortKey = key;
-			this.items = Util.sortItems(this.items, key, this.sortAsc, this.artistsMap);
+			this.items = Models.sortItems(this.items, key, this.sortAsc, this.artistsMap);
 		},
 		itemFields: function(item){
 			if(this.isTrackPage){

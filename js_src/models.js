@@ -1,3 +1,5 @@
+const Util = require('./util');
+
 function getTabsMap(){
     //navigation tabs
     //note: as of now Maps are not reactive in Vue
@@ -49,6 +51,53 @@ function mapForItems(items){
     return ret;
 }
 
+function sortItems(items, sortKey, sortAsc, artistsMap){
+    const getValueByKey = (item) =>{
+        return item[sortKey];
+    };
+    const getArtistName = (item) =>{
+        return artistsMap.get(item.artist_id).name;
+    };
+
+    const itemValueFunc = sortKey === 'artist' ? getArtistName : getValueByKey;
+
+    return items.sort((a,b)=>{
+        let value1;
+        let value2;
+        if(!sortAsc){
+            value1 = itemValueFunc(b);
+            value2 = itemValueFunc(a);
+        }
+        else{
+            value1 = itemValueFunc(a);
+            value2 = itemValueFunc(b);
+        }
+        if(Util.isEmpty(value1)){
+            if(Util.isEmpty(value2)){
+                return 0;
+            }
+            return -1;
+        }
+        else if(Util.isEmpty(value2)){
+            return 1;
+        }
+        if(typeof value1 === 'number'){
+            return value1 - value2;
+        }
+        if(typeof value1 === 'string'){
+            value1 = value1.toUpperCase();
+            value2 = value2.toUpperCase();
+        }
+        if(value1 > value2){
+            return 1;
+        }
+        else if(value1 < value2){
+            return -1;
+        }
+        return 0;
+    });
+}
+
 
 
 module.exports = {
@@ -57,4 +106,5 @@ module.exports = {
     defaultItemColumns: getDefaultItemColumns(),
     albumItemColumns: getAlbumItemColumns(),
     mapForItems,
+    sortItems,
 };
