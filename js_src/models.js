@@ -21,8 +21,8 @@ function getTrackItemColumns(){
         {title: 'Artist', sort: 'artist'},
         {title: 'Album', sort: 'album_title'},
         {title: 'Length', sort: 'length'},
-        {title: 'Genre', sort: 'Genre'},
-        {title: 'Composer', sort: 'Composer'},
+        {title: 'Genre', sort: 'genre'},
+        {title: 'Composer', sort: 'composer'},
         {title: 'Bit Rate', sort: 'bit_rate'},
         {title: 'Play Count', sort: 'play_count'},
         {title: 'Date Added', sort: 'date_added'},
@@ -51,15 +51,33 @@ function mapForItems(items){
     return ret;
 }
 
-function sortItems(items, sortKey, sortAsc, artistsMap){
+function sortItems(items, sortKey, sortAsc, relatedFields){
+    function getRelatedFieldValueBuilder(itemKey, relatedFieldIdMap, relatedFieldKey='name'){
+        return (item)=>{
+            //relatedFieldId might be null
+            const relatedFieldId = item[itemKey];
+            return Util.isEmpty(relatedFieldId) ? null : relatedFieldIdMap.get(relatedFieldId)[relatedFieldKey];
+        };
+    }
+    
     const getValueByKey = (item) =>{
         return item[sortKey];
     };
-    const getArtistName = (item) =>{
-        return artistsMap.get(item.artist_id).name;
-    };
-
-    const itemValueFunc = sortKey === 'artist' ? getArtistName : getValueByKey;
+    let itemValueFunc;
+    switch(sortKey){
+        case 'artist':
+            itemValueFunc = getRelatedFieldValueBuilder('artist_id', relatedFields.artists);
+            break;
+        case 'composer':
+            itemValueFunc = getRelatedFieldValueBuilder('composer_id', relatedFields.composers);
+            break;
+        case 'genre':
+            itemValueFunc = getRelatedFieldValueBuilder('genre_id', relatedFields.genres);
+            break;
+        default:
+            itemValueFunc = getValueByKey;
+            break;
+    }
 
     return items.sort((a,b)=>{
         let value1;
