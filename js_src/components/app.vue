@@ -1,17 +1,71 @@
-import Vue from 'vue';
+<template>
+	<div>
+		<div class="search-bar-container">
+			<input type="search" placeholder="Search tracks" v-model="searchQuery" @keyup.enter="searchForTracks" aria-labelledby="Search tracks"/>
+			<button @click="searchForTracks" :disabled="!isSearchEnabled" class="outline-button">Search</button>
+		</div>
+		<nav class="nav">
+			<ul class="nav-list nav-pills">
+				<li v-for="key in [...tabs.keys()]" :class="{active: activeTab === key}" @click="changeTab(key)" :key="key">{{ tabs.get(key).title }}</li>
+			</ul>
+		</nav>
+		<table class="track-list" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
+			<thead>
+				<th class="col-play-btn"></th>
+				<template v-for="(column, i) in itemColumns">
+					<th :key="i" @click="sortItems(column.sort)">{{column.title}}</th>
+				</template>
+			</thead>
+			<tbody>
+				<template v-for="(item, i) in items">
+					<tr @dblclick="doubleClickRowAction(item, i)" :key="i">
+						<td @click="play(item, i, path)" class="col-play-btn track-play-button" :class="{'pause': isTrackPlaying(item)}"></td>
+						<template v-for="field in itemFields(item)">
+							<td :key="`${item}${i}${field}`">{{field}}</td>
+						</template>
+					</tr>
+				</template>
+			</tbody>
+		</table>
+		<div class="media-controls-container">
+			<template v-if="activeTrack">
+				<div class="active-track-container marquee">
+					<div class="active-track-display">
+						<span>{{activeTrackDisplay}}</span>
+						<span>{{activeTrackDisplay}}</span>
+					</div>
+				</div>
+				<div class="track-time">
+					<span>{{formatTrackLength(elapsedTime)}}</span>
+					<span>{{formatTrackLength(activeTrack.track.length)}}</span>
+				</div>
+				<div class="media-controls">
+					<button class="button-previous media-controls-button media-controls-button-rounded" @click="previousButtonAction" :disabled="!hasPreviousTrack" title="Play previous track">&#9194;</button>
+					<button class="button-play media-controls-button" :class="{'is-paused': !isPlaying}" @click="playButtonAction" :disabled="!activeTrack" :title="playButtonTitle">
+						<span v-html="playButtonText"></span>
+					</button>
+					<button class="button-next media-controls-button media-controls-button-rounded" @click="playNextTrack" :disabled="!hasNextTrack" title="Play next track">&#9193;</button>
+				</div>
+			</template>
+			<div v-if="!isInitialLoadComplete">Loading&hellip;</div>
+		</div>
+	</div>
+</template>
+
+<script>
 import infiniteScroll from 'vue-infinite-scroll';
-import Models from './models';
-import ArrayUtil from './array-util';
-import ApiHelpers from './api-helpers';
-import Util from './util';
+import Models from '../models';
+import ArrayUtil from '../array-util';
+import ApiHelpers from '../api-helpers';
+import Util from '../util';
 
 let audio = null;
 let elapsedTimeTimer = null;
 
-new Vue({
-	el: '#app',
+export default {
+	name: 'Seren-App',
 	directives: {infiniteScroll},
-	created: function(){
+	created(){
 		audio = new Audio();
 		audio.addEventListener('ended', ()=>{
 			if(this.hasNextTrack){
@@ -27,25 +81,27 @@ new Vue({
 		ApiHelpers.loadModel('albums', this);
 		this.loadMoreTracks();
 	},
-	data: {
-		tracks: null,
-		artists: null,
-		albums: null,
-		genres: null,
-		composers: null,
-		displayTracks: [],
-		//activeTrackTrackList: the track list when the currently playing track started playing
-		//this is so that when pages are changed, the correct next track will play
-		activeTrackTrackList: [],
-		activeTrack: null,
-		isPlaying: false,
-		elapsedTime: 0,
-		tabs: Models.tabsMap,
-		path: ['artists'],
-		searchQuery: '',
-		searchResults: [],
-		previousSortKey: null,
-		sortAsc: true,
+	data(){
+		return {
+			tracks: null,
+			artists: null,
+			albums: null,
+			genres: null,
+			composers: null,
+			displayTracks: [],
+			//activeTrackTrackList: the track list when the currently playing track started playing
+			//this is so that when pages are changed, the correct next track will play
+			activeTrackTrackList: [],
+			activeTrack: null,
+			isPlaying: false,
+			elapsedTime: 0,
+			tabs: Models.tabsMap,
+			path: ['artists'],
+			searchQuery: '',
+			searchResults: [],
+			previousSortKey: null,
+			sortAsc: true,
+		};
 	},
 	computed: {
 		artistsMap: function(){
@@ -318,4 +374,5 @@ new Vue({
 			});
 		},
 	}
-});
+};
+</script>
