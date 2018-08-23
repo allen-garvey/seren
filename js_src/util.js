@@ -32,7 +32,7 @@ function formatTrackLength(trackLength){
     return `${minutes}:${padNumber(seconds, 2)}`;
 }
 
-module.exports = {
+export default {
     isEmpty,
     formatUtcDateToUs,
     formatTrackLength,

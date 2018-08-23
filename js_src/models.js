@@ -1,4 +1,4 @@
-const Util = require('./util');
+import Util from './util';
 
 function getTabsMap(){
     //navigation tabs
@@ -118,7 +118,7 @@ function sortItems(items, sortKey, sortAsc, relatedFields){
 
 
 
-module.exports = {
+export default {
     tabsMap: getTabsMap(),
     trackItemColumns: getTrackItemColumns(),
     defaultItemColumns: getDefaultItemColumns(),

@@ -18,7 +18,7 @@ function loadModel(modelName, target){
 	});
 }
 
-module.exports = {
+export default {
     apiUrlBase,
     getJson,
     getTracksForItem,

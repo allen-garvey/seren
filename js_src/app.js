@@ -1,9 +1,9 @@
-const Vue = require('vue');
-const infiniteScroll = require('vue-infinite-scroll');
-const Models = require('./models');
-const ArrayUtil = require('./array-util');
-const ApiHelpers = require('./api-helpers');
-const Util = require('./util');
+import Vue from 'vue';
+import infiniteScroll from 'vue-infinite-scroll';
+import Models from './models';
+import ArrayUtil from './array-util';
+import ApiHelpers from './api-helpers';
+import Util from './util';
 
 let audio = null;
 let elapsedTimeTimer = null;

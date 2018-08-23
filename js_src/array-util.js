@@ -21,6 +21,6 @@ function areArraysEqual(a1, a2){
 }
 
 
-module.exports = {
+export default {
     areArraysEqual,
 };
