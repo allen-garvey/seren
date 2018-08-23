@@ -119,7 +119,7 @@ function sortItems(items, sortKey, sortAsc, relatedFields){
 
 
 export default {
-    tabsMap: getTabsMap(),
+    getTabsMap,
     trackItemColumns: getTrackItemColumns(),
     defaultItemColumns: getDefaultItemColumns(),
     albumItemColumns: getAlbumItemColumns(),
