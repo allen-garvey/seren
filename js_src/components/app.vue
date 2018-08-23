@@ -114,7 +114,13 @@ export default {
 			return this.path[this.path.length - 1];
 		},
 		isInitialLoadComplete: function(){
-			return this.tracks !== null && this.artists !== null && this.genres !== null && this.composers !== null && this.albums !== null;
+			const modelNames = ['tracks', 'artists', 'genres', 'composers', 'albums'];
+			for(let modelName of modelNames){
+				if(this[modelName] === null){
+					return false;
+				}
+			}
+			return true;
 		},
 		isInfiniteScrollDisabled: function(){
 			return this.activeTab !== 'tracks';
