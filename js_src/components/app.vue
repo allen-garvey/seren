@@ -9,24 +9,7 @@
 				<li v-for="key in tabKeys" :class="{active: activeTab === key}" @click="changeTab(key)" :key="key">{{ tabs.get(key).title }}</li>
 			</ul>
 		</nav>
-		<table class="track-list" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
-			<thead>
-				<th class="col-play-btn"></th>
-				<template v-for="(column, i) in itemColumns">
-					<th :key="i" @click="sortItems(column.sort)">{{column.title}}</th>
-				</template>
-			</thead>
-			<tbody>
-				<template v-for="(item, i) in items">
-					<tr @dblclick="doubleClickRowAction(item, i)" :key="i">
-						<td @click="play(item, i, path)" class="col-play-btn track-play-button" :class="{'pause': isTrackPlaying(item)}"></td>
-						<template v-for="field in itemFields(item)">
-							<td :key="`${item}${i}${field}`">{{field}}</td>
-						</template>
-					</tr>
-				</template>
-			</tbody>
-		</table>
+		<Track-List :load-more-tracks="loadMoreTracks" :item-columns="itemColumns" :item-fields="itemFields" :is-track-playing="isTrackPlaying" :items="items" :sort-items-func="sortItems" :play-track="playTrack" :double-click-row-action="doubleClickRowAction" :is-infinite-scroll-disabled="isInfiniteScrollDisabled" />
 		<div class="media-controls-container">
 			<template v-if="activeTrack">
 				<div class="active-track-container marquee">
@@ -54,6 +37,7 @@
 
 <script>
 import infiniteScroll from 'vue-infinite-scroll';
+import TrackList from './track-list.vue';
 import Models from '../models';
 import ArrayUtil from '../array-util';
 import ApiHelpers from '../api-helpers';
@@ -65,6 +49,9 @@ let elapsedTimeTimer = null;
 export default {
 	name: 'Seren-App',
 	directives: {infiniteScroll},
+	components: {
+		'Track-List': TrackList,
+	},
 	created(){
 		audio = new Audio();
 		audio.addEventListener('ended', ()=>{
@@ -99,8 +86,8 @@ export default {
 			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
-			previousSortKey: null,
-			sortAsc: true,
+			// previousSortKey: null,
+			// sortAsc: true,
 		};
 	},
 	computed: {
@@ -130,7 +117,7 @@ export default {
 			return this.tracks !== null && this.artists !== null && this.genres !== null && this.composers !== null && this.albums !== null;
 		},
 		isInfiniteScrollDisabled: function(){
-			return !this.isInitialLoadComplete || this.activeTab !== 'tracks';
+			return this.activeTab !== 'tracks';
 		},
 		activeTrackDisplay: function(){
 			if(!this.activeTrack){
@@ -244,6 +231,9 @@ export default {
 			});
 			this.path = this.path.concat([item.id, 'tracks']);
 		},
+		playTrack(track, trackIndex){
+			this.play(track, trackIndex, this.path);
+		},
 		play: function(track, trackIndex, trackPath){
 			if(!this.activeTrack || !ArrayUtil.areArraysEqual(this.activeTrack.path, trackPath)){
 				//if we are on tracks page, we only want to reference the tracks,
@@ -324,20 +314,13 @@ export default {
 			let track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
-		sortItems: function(key){
-			if(key !== this.previousSortKey){
-				this.sortAsc = true;
-			}
-			else{
-				this.sortAsc = !this.sortAsc;
-			}
-			this.previousSortKey = key;
+		sortItems: function(key, sortAsc){
 			const relatedFields = {
 				artists: this.artistsMap,
 				genres: this.genresMap,
 				composers: this.composersMap,
 			};
-			Models.sortItems(this.items, key, this.sortAsc, relatedFields);
+			Models.sortItems(this.items, key, sortAsc, relatedFields);
 		},
 		itemFields: function(item){
 			if(this.isTrackPage){
