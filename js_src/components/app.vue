@@ -95,8 +95,6 @@ export default {
 			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
-			// previousSortKey: null,
-			// sortAsc: true,
 			isInitialLoadComplete: false,
 		};
 	},
