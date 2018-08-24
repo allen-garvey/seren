@@ -107,7 +107,7 @@ export default {
 		hasActiveTrack(){
 			return 'id' in this.activeTrack.track;
 		},
-		activeTrackDisplay: function(){
+		activeTrackDisplay(){
 			if(!this.hasActiveTrack){
 				return '';
 			}
@@ -117,7 +117,7 @@ export default {
 			}
 			return ret;
 		},
-		playButtonTitle: function(){
+		playButtonTitle(){
 			if(this.isPlaying){
 				return `Pause ${this.activeTrack.track.title}`;
 			}
@@ -127,16 +127,16 @@ export default {
 			return 'Play track';
 
 		},
-		playButtonText: function(){
+		playButtonText(){
 			if(this.isPlaying){
 				return '&#9646;&#9646;';
 			}
 			return '&#9654;';
 		},
-		hasPreviousTrack: function(){
+		hasPreviousTrack(){
 			return this.hasActiveTrack && this.activeTrack.index > 0;
 		},
-		hasNextTrack: function(){
+		hasNextTrack(){
 			return this.hasActiveTrack && this.activeTrack.index < this.activeTrackTrackList.length - 1;
 		},
 	},
@@ -169,7 +169,7 @@ export default {
 				resolve(this[key]);
 			});
 		},
-		loadMoreTracks: function(){
+		loadMoreTracks(){
 			const offset = this.tracks ? this.tracks.length : false;
 
 			let url = `${ApiHelpers.apiUrlBase}/tracks?limit=100`;
@@ -185,13 +185,13 @@ export default {
 				}
 			});
 		},
-		isTrackPlaying: function(track){
+		isTrackPlaying(track){
 			return this.isPlaying && this.hasActiveTrack && track.id === this.activeTrack.track.id;
 		},
 		playTrack(track, trackIndex, items){
 			this.play(track, trackIndex, this.$route.path, items);
 		},
-		play: function(track, trackIndex, trackPath, items){
+		play(track, trackIndex, trackPath, items){
 			if(this.activeTrack.path !== trackPath){
 				//if we are on tracks page, we only want to reference the tracks,
 				//otherwise we want to copy it
@@ -227,16 +227,16 @@ export default {
 				}, 1000);
 			}
 		},
-		stop: function(){
+		stop(){
 			this.displayTrackStopped();
 			audio.pause();
 		},
-		displayTrackStopped: function(){
+		displayTrackStopped(){
 			this.isPlaying = false;
 			clearInterval(elapsedTimeTimer);
 			elapsedTimeTimer = null;
 		},
-		playButtonAction: function(){
+		playButtonAction(){
 			if(this.isPlaying){
 				this.stop();
 			}
@@ -244,7 +244,7 @@ export default {
 				this.play(this.activeTrack.track, this.activeTrack.index, this.activeTrack.path);
 			}
 		},
-		previousButtonAction: function(){
+		previousButtonAction(){
 			//go back to beginning of track
 			//if more than a fixed amount has played
 			if(this.elapsedTime > 4000){
@@ -255,7 +255,7 @@ export default {
 				this.playPreviousTrack();
 			}
 		},
-		playPreviousTrack: function(){
+		playPreviousTrack(){
 			if(!this.hasPreviousTrack){
 				return;
 			}
@@ -263,7 +263,7 @@ export default {
 			let track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
-		playNextTrack: function(){
+		playNextTrack(){
 			if(!this.hasNextTrack){
 				return;
 			}
@@ -271,7 +271,7 @@ export default {
 			let track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
-		sortItems: function(items, key, sortAsc){
+		sortItems(items, key, sortAsc){
 			const relatedFields = {
 				artists: this.artistsMap,
 				genres: this.genresMap,
@@ -280,7 +280,7 @@ export default {
 			Models.sortItems(items, key, sortAsc, relatedFields);
 		},
 		formatTrackLength: Util.formatTrackLength,
-		searchForTracks: function(){
+		searchForTracks(){
 			this.$router.push({name: 'searchTracks', query: { q: this.searchQuery }});
 		},
 	}
