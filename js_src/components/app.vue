@@ -7,7 +7,7 @@
 		<nav class="nav">
 			<ul class="nav-list nav-pills">
 				<li v-for="(tab, i) in tabs" :key="i">
-					<router-link :to="{name: tab.routeName}">{{ tab.title }}</router-link>
+					<router-link :to="tab.route(searchQuery)">{{ tab.title }}</router-link>
 				</li>
 			</ul>
 		</nav>
@@ -98,6 +98,7 @@ export default {
 			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
+			savedSearchResultsQuery: '',
 			isInitialLoadComplete: false,
 		};
 	},
@@ -187,6 +188,22 @@ export default {
 	},
 	methods: {
 		getItems(key){
+			if(key === 'searchTracks'){
+				const searchQuery = this.$route.query.q;
+				if(!searchQuery || this.savedSearchResultsQuery === searchQuery){
+					const searchResults = !searchQuery ? [] : this.searchResults;
+					return new Promise((resolve, reject)=>{
+						resolve(searchResults);
+					});
+				}
+				const searchUrl = `${ApiHelpers.apiUrlBase}search/tracks?q=${encodeURIComponent(searchQuery)}`;
+				return ApiHelpers.getJson(searchUrl).then((json)=>{
+					this.searchResults = json.data;
+					this.savedSearchResultsQuery = searchQuery;
+					return this.searchResults;
+				});
+			}
+
 			return new Promise((resolve, reject)=>{
 				resolve(this[key]);
 			});
@@ -348,14 +365,7 @@ export default {
 		},
 		formatTrackLength: Util.formatTrackLength,
 		searchForTracks: function(){
-			if(!this.isSearchEnabled){
-				return;
-			}
-			const searchUrl = `${ApiHelpers.apiUrlBase}search/tracks?q=${encodeURIComponent(this.searchQuery)}`;
-			ApiHelpers.getJson(searchUrl).then((json)=>{
-				this.searchResults = json.data;
-				this.path = ['search'];
-			});
+			this.$router.push({name: 'searchTracks', query: { q: this.searchQuery }});
 		},
 	}
 };

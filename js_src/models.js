@@ -4,34 +4,55 @@ import ApiHelpers from './api-helpers';
 function getTabs(){
     return [
         {
-            path: 'artists', 
             title: 'Artists',
-            routeName: 'artistsIndex',
+            route(searchQuery){
+                return {
+                    name: 'artistsIndex'
+                };
+            },
         },
         {
-            path: 'albums', 
             title: 'Albums',
-            routeName: 'albumsIndex',
+            route(searchQuery){
+                return {
+                    name: 'albumsIndex'
+                };
+            },
         },
         {
-            path: 'composers', 
             title: 'Composers',
-            routeName: 'composersIndex',
+            route(searchQuery){
+                return {
+                    name: 'composersIndex'
+                };
+            },
         },
         {
-            path: 'genres', 
             title: 'Genres',
-            routeName: 'genresIndex',
+            route(searchQuery){
+                return {
+                    name: 'genresIndex'
+                };
+            },
         },
         {
-            path: 'tracks', 
             title: 'Tracks',
-            routeName: 'tracksIndex',
+            route(searchQuery){
+                return {
+                    name: 'tracksIndex'
+                };
+            },
         },
         {
-            path: 'search', 
             title: 'Search',
-            routeName: 'albumsIndex',
+            route(searchQuery){
+                return {
+                    name: 'searchTracks',
+                    query: {
+                        q: searchQuery,
+                    },
+                };
+            },
         },
     ];
 }

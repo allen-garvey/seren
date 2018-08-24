@@ -84,7 +84,7 @@ export default {
         },
     },
 	created(){
-        //watch for getItemsKey will not be called on initial load
+        //watch for $route will not be called on initial load
         this.loadItems();
 	},
 	data(){
@@ -97,7 +97,7 @@ export default {
 	computed: {
     },
     watch: {
-        getItemsKey(){
+        '$route'(){
             this.loadItems();
         },
     },
