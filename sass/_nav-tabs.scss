@@ -10,18 +10,19 @@
 	list-style-type: none;
 }
 
-.nav-pills li{
+.nav-pills li a{
+	text-decoration: none;
 	color: $accent_color_text;
 	cursor: pointer;
 	padding: 0.5em 1em;
-}
 
-.nav-pills li:hover{
-	color: #0056b3;
-}
+	&:hover{
+		color: #0056b3;
+	}
 
-.nav-pills li.active{
-	background: $accent_color_text;
-	color: white;
-	border-radius: 4px;
+	&.router-link-active{
+		background: $accent_color_text;
+		color: white;
+		border-radius: 4px;	
+	}
 }
