@@ -11,16 +11,8 @@ function getTracksForItem(itemType, itemId){
 	return getJson(url);
 }
 
-function loadModel(modelName, target){
-	const url = `${apiUrlBase}${modelName}`;
-	getJson(url).then((json)=>{
-		target[modelName] = json.data;
-	});
-}
-
 export default {
     apiUrlBase,
     getJson,
     getTracksForItem,
-    loadModel,
 };

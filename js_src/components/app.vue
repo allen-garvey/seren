@@ -62,19 +62,28 @@ export default {
 				this.displayTrackStopped();
 			}
 		});
-		ApiHelpers.loadModel('artists', this);
-		ApiHelpers.loadModel('genres', this);
-		ApiHelpers.loadModel('composers', this);
-		ApiHelpers.loadModel('albums', this);
-		this.loadMoreTracks();
+
+		Promise.all([
+			Models.loadModelAndMap('artists', this, this.artistsMap),
+			Models.loadModelAndMap('genres', this, this.genresMap),
+			Models.loadModelAndMap('composers', this, this.composersMap),
+			Models.loadModelAndMap('albums', this, this.albumsMap),
+			this.loadMoreTracks(),
+		]).then(()=>{
+			this.isInitialLoadComplete = true;
+		});
 	},
 	data(){
 		return {
-			tracks: null,
-			artists: null,
-			albums: null,
-			genres: null,
-			composers: null,
+			tracks: [],
+			artists: [],
+			albums: [],
+			genres: [],
+			composers: [],
+			artistsMap: new Map(),
+			albumsMap: new Map(),
+			genresMap: new Map(),
+			composersMap: new Map(),
 			displayTracks: [],
 			//activeTrackTrackList: the track list when the currently playing track started playing
 			//this is so that when pages are changed, the correct next track will play
@@ -88,6 +97,7 @@ export default {
 			searchResults: [],
 			// previousSortKey: null,
 			// sortAsc: true,
+			isInitialLoadComplete: false,
 		};
 	},
 	computed: {
@@ -95,32 +105,11 @@ export default {
 		tabKeys(){
 			return [...this.tabs.keys()];
 		},
-		artistsMap: function(){
-			return Models.mapForItems(this.artists);
-		},
-		albumsMap: function(){
-			return Models.mapForItems(this.albums);
-		},
-		genresMap: function(){
-			return Models.mapForItems(this.genres);
-		},
-		composersMap: function(){
-			return Models.mapForItems(this.composers);
-		},
 		activeTab: function(){
 			return this.path[0];
 		},
 		activePage: function(){
 			return this.path[this.path.length - 1];
-		},
-		isInitialLoadComplete: function(){
-			const modelNames = ['tracks', 'artists', 'genres', 'composers', 'albums'];
-			for(let modelName of modelNames){
-				if(this[modelName] === null){
-					return false;
-				}
-			}
-			return true;
 		},
 		isInfiniteScrollDisabled: function(){
 			return this.activeTab !== 'tracks';
@@ -210,7 +199,7 @@ export default {
 			if(offset){
 				url = `${url}&offset=${offset}`;
 			}
-			ApiHelpers.getJson(url).then((json)=>{
+			return ApiHelpers.getJson(url).then((json)=>{
 				if(offset){
 					this.tracks = this.tracks.concat(json.data);
 				}

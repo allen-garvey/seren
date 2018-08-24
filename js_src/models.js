@@ -1,4 +1,5 @@
 import Util from './util';
+import ApiHelpers from './api-helpers';
 
 function getTabsMap(){
     //navigation tabs
@@ -39,16 +40,6 @@ function getAlbumItemColumns(){
                 {title: 'Title', sort: 'title'},
                 {title: 'Artist', sort: 'artist'},
             ];
-}
-
-function mapForItems(items){
-    const ret = new Map();
-    if(items !== null){
-        items.forEach((item)=>{
-            ret.set(item.id, item);
-        });
-    }
-    return ret;
 }
 
 function sortItems(items, sortKey, sortAsc, relatedFields){
@@ -116,6 +107,18 @@ function sortItems(items, sortKey, sortAsc, relatedFields){
     });
 }
 
+function loadModelAndMap(modelName, target, itemsMap){
+	const url = `${ApiHelpers.apiUrlBase}${modelName}`;
+	return ApiHelpers.getJson(url).then((json)=>{
+        const items = json.data;
+        target[modelName] = items;
+        
+        items.forEach((item)=>{
+            itemsMap.set(item.id, item);
+        });
+	});
+}
+
 
 
 export default {
@@ -123,6 +126,6 @@ export default {
     trackItemColumns: getTrackItemColumns(),
     defaultItemColumns: getDefaultItemColumns(),
     albumItemColumns: getAlbumItemColumns(),
-    mapForItems,
     sortItems,
+    loadModelAndMap,
 };
