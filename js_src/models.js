@@ -178,7 +178,7 @@ function sortItems(items, sortKey, sortAsc, relatedFields){
 }
 
 function loadModelAndMap(modelName, target, itemsMap){
-	const url = `${ApiHelpers.apiUrlBase}${modelName}`;
+	const url = `${ApiHelpers.apiUrlBase}/${modelName}`;
 	return ApiHelpers.getJson(url).then((json)=>{
         const items = json.data;
         target[modelName] = items;

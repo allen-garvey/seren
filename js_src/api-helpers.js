@@ -1,4 +1,4 @@
-const apiUrlBase = '/api/';
+const apiUrlBase = '/api';
 
 function getJson(url){
 	return fetch(url).then((response)=>{ 
@@ -7,7 +7,7 @@ function getJson(url){
 }
 
 function getTracksForItem(itemType, itemId){
-	const url = `${apiUrlBase}${itemType}/${itemId}/tracks`;
+	const url = `${apiUrlBase}/${itemType}/${itemId}/tracks`;
 	return getJson(url);
 }
 

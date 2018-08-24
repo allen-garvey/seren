@@ -196,7 +196,7 @@ export default {
 						resolve(searchResults);
 					});
 				}
-				const searchUrl = `${ApiHelpers.apiUrlBase}search/tracks?q=${encodeURIComponent(searchQuery)}`;
+				const searchUrl = `${ApiHelpers.apiUrlBase}/search/tracks?q=${encodeURIComponent(searchQuery)}`;
 				return ApiHelpers.getJson(searchUrl).then((json)=>{
 					this.searchResults = json.data;
 					this.savedSearchResultsQuery = searchQuery;
@@ -214,7 +214,7 @@ export default {
 		loadMoreTracks: function(){
 			const offset = this.tracks ? this.tracks.length : false;
 
-			let url = `${ApiHelpers.apiUrlBase}tracks?limit=100`;
+			let url = `${ApiHelpers.apiUrlBase}/tracks?limit=100`;
 			if(offset){
 				url = `${url}&offset=${offset}`;
 			}
