@@ -9,7 +9,7 @@
         <tbody>
             <template v-for="(item, i) in items">
                 <tr @dblclick="doubleClickRowAction(item, i)" :key="i">
-                    <td @click="playTrack(item, i)" class="col-play-btn track-play-button" :class="{'pause': isTrackPlaying(item)}"></td>
+                    <td @click="rowPlayButtonClicked(item, i)" class="col-play-btn" :class="{'pause': canRowBePlayed && isTrackPlaying(item), 'track-play-button': canRowBePlayed}"></td>
                     <template v-for="(field, j) in itemFields(item)">
                         <td :key="`${item.id}${i}${field}${j}`">{{field}}</td>
                     </template>
@@ -96,6 +96,9 @@ export default {
 		};
 	},
 	computed: {
+        canRowBePlayed(){
+            return !this.routeForItem;
+        },
     },
     watch: {
         '$route'(){
@@ -118,6 +121,11 @@ export default {
 			}
 			this.previousSortKey = key;
             this.sortItemsFunc(key, this.sortAsc);
+        },
+        rowPlayButtonClicked(item, i){
+            if(this.canRowBePlayed){
+                this.playTrack(item, i);
+            }
         },
         doubleClickRowAction(item, i){
             if(this.routeForItem){
