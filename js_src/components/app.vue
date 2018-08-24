@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="app-container">
 		<div class="search-bar-container">
 			<input type="search" placeholder="Search tracks" v-model="searchQuery" @keyup.enter="searchForTracks" aria-labelledby="Search tracks"/>
 			<button @click="searchForTracks" :disabled="!isSearchEnabled" class="outline-button">Search</button>
