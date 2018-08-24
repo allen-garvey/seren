@@ -10,7 +10,7 @@ function getTabs(){
         },
         {
             path: 'albums', 
-            title: 'Artists',
+            title: 'Albums',
             routeName: 'albumsIndex',
         },
         {
