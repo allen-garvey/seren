@@ -118,13 +118,13 @@ export default {
 			}
 			else{
 				this.sortAsc = !this.sortAsc;
-			}
+            }
 			this.previousSortKey = key;
-            this.sortItemsFunc(key, this.sortAsc);
+            this.sortItemsFunc(this.items, key, this.sortAsc);
         },
         rowPlayButtonClicked(item, i){
             if(this.canRowBePlayed){
-                this.playTrack(item, i);
+                this.playTrack(item, i, this.items);
             }
         },
         doubleClickRowAction(item, i){
@@ -132,7 +132,7 @@ export default {
                 this.$router.push(this.routeForItem(item));
             }
             else{
-                this.playTrack(item, i);
+                this.playTrack(item, i, this.items);
             }
         },
 	}

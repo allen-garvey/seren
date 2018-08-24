@@ -2,7 +2,7 @@
 	<div class="app-container">
 		<div class="search-bar-container">
 			<input type="search" placeholder="Search tracks" v-model="searchQuery" @keyup.enter="searchForTracks" aria-labelledby="Search tracks"/>
-			<button @click="searchForTracks" :disabled="!isSearchEnabled" class="outline-button">Search</button>
+			<button @click="searchForTracks" :disabled="!searchQuery" class="outline-button">Search</button>
 		</div>
 		<nav class="nav">
 			<ul class="nav-list nav-pills">
@@ -13,7 +13,7 @@
 		</nav>
 		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
 		<div class="media-controls-container">
-			<template v-if="activeTrack">
+			<template v-if="hasActiveTrack">
 				<div class="active-track-container marquee">
 					<div class="active-track-display">
 						<span>{{activeTrackDisplay}}</span>
@@ -55,7 +55,6 @@ export default {
 		'Track-List': TrackList,
 	},
 	created(){
-		console.log(this.$route);
 		audio = new Audio();
 		audio.addEventListener('ended', ()=>{
 			if(this.hasNextTrack){
@@ -91,11 +90,13 @@ export default {
 			//activeTrackTrackList: the track list when the currently playing track started playing
 			//this is so that when pages are changed, the correct next track will play
 			activeTrackTrackList: [],
-			activeTrack: null,
+			//initializing activeTrack to empty objects simplifies logic since we can reduce null checks
+			activeTrack: {
+				track: {},
+			},
 			isPlaying: false,
 			elapsedTime: 0,
 			tabs: Models.getTabs(),
-			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
 			savedSearchResultsQuery: '',
@@ -103,17 +104,11 @@ export default {
 		};
 	},
 	computed: {
-		activeTab: function(){
-			return this.path[0];
-		},
-		activePage: function(){
-			return this.path[this.path.length - 1];
-		},
-		isInfiniteScrollDisabled: function(){
-			return this.activeTab !== 'tracks';
+		hasActiveTrack(){
+			return 'id' in this.activeTrack.track;
 		},
 		activeTrackDisplay: function(){
-			if(!this.activeTrack){
+			if(!this.hasActiveTrack){
 				return '';
 			}
 			let ret = `${this.activeTrack.track.title} - ${this.artistsMap.get(this.activeTrack.track.artist_id).name}`;
@@ -126,7 +121,7 @@ export default {
 			if(this.isPlaying){
 				return `Pause ${this.activeTrack.track.title}`;
 			}
-			else if(this.activeTrack){
+			else if(this.hasActiveTrack){
 				return `Play ${this.activeTrack.track.title}`;
 			}
 			return 'Play track';
@@ -139,51 +134,10 @@ export default {
 			return '&#9654;';
 		},
 		hasPreviousTrack: function(){
-			return this.activeTrack && this.activeTrack.index > 0;
+			return this.hasActiveTrack && this.activeTrack.index > 0;
 		},
 		hasNextTrack: function(){
-			return this.activeTrack && this.activeTrack.index < this.activeTrackTrackList.length - 1;
-		},
-		activePageTracks: function(){
-			if(this.activeTab !== 'tracks' && this.activePage === 'tracks'){
-				return this.displayTracks;
-			}
-			if(this.activeTab === 'search'){
-				return this.searchResults;
-			}
-			return this.tracks;	
-		},
-		items: function(){
-			if(this.activeTab === 'tracks' || this.activePage === 'tracks'){
-				return this.activePageTracks;
-			}
-			switch(this.activeTab){
-				case 'artists':
-					return this.artists;
-				case 'genres':
-					return this.genres;
-				case 'composers':
-					return this.composers;
-				case 'albums':
-					return this.albums;
-				default:
-					return this.activePageTracks;
-			}
-		},
-		itemColumns: function(){
-			if(this.isTrackPage){
-				return Models.trackItemColumns;
-			}
-			else if(this.activePage === 'albums'){
-				return Models.albumItemColumns;
-			}
-			return Models.defaultItemColumns;
-		},
-		isTrackPage: function(){
-			return this.activePage === 'tracks' || this.activePage === 'search';
-		},
-		isSearchEnabled: function(){
-			return !!this.searchQuery;
+			return this.hasActiveTrack && this.activeTrack.index < this.activeTrackTrackList.length - 1;
 		},
 	},
 	methods: {
@@ -215,9 +169,6 @@ export default {
 				resolve(this[key]);
 			});
 		},
-		changeTab: function(tabKey){
-			this.path = [tabKey];
-		},
 		loadMoreTracks: function(){
 			const offset = this.tracks ? this.tracks.length : false;
 
@@ -235,47 +186,32 @@ export default {
 			});
 		},
 		isTrackPlaying: function(track){
-			return this.isPlaying && this.activeTrack && track.id === this.activeTrack.track.id;
+			return this.isPlaying && this.hasActiveTrack && track.id === this.activeTrack.track.id;
 		},
-		doubleClickRowAction: function(item, rowIndex){
-			if(this.isTrackPage){
-				this.play(item, rowIndex, this.path);
-			}
-			else{
-				this.displayTracksForItem(item);
-			}
+		playTrack(track, trackIndex, items){
+			this.play(track, trackIndex, this.$route.path, items);
 		},
-		displayTracksForItem: function(item){
-			this.displayTracks = [];
-			ApiHelpers.getTracksForItem(this.activeTab, item.id).then((json)=>{
-				this.displayTracks = json.data;
-			});
-			this.path = this.path.concat([item.id, 'tracks']);
-		},
-		playTrack(track, trackIndex){
-			this.play(track, trackIndex, this.path);
-		},
-		play: function(track, trackIndex, trackPath){
-			if(!this.activeTrack || !ArrayUtil.areArraysEqual(this.activeTrack.path, trackPath)){
+		play: function(track, trackIndex, trackPath, items){
+			if(this.activeTrack.path !== trackPath){
 				//if we are on tracks page, we only want to reference the tracks,
 				//otherwise we want to copy it
-				if(this.activePage === 'tracks'){
-					this.activeTrackTrackList = this.activePageTracks;
+				if(this.$route.name === 'tracksIndex'){
+					this.activeTrackTrackList = this.tracks;
 				}
 				else{
-					this.activeTrackTrackList = this.activePageTracks.slice();
+					this.activeTrackTrackList = items.slice();
 				}
 			}
-			if(!this.activeTrack || this.activeTrack.track.id !== track.id){
+			if(this.activeTrack.track.id !== track.id){
 				this.activeTrack = {
 					track: track,
-					path: trackPath.slice(),
+					path: trackPath,
 					index: trackIndex,
 				};
 				this.isPlaying = true;
 				this.elapsedTime = 0;
-				// let mediaUrl = '/media/' + encodeURI(track.file_path).replace('#', '%23').replace('?', '%3F');
-				let mediaUrl = '/media/' + escape(track.file_path);
+				// const mediaUrl = '/media/' + encodeURI(track.file_path).replace('#', '%23').replace('?', '%3F');
+				const mediaUrl = '/media/' + escape(track.file_path);
 				audio.src = mediaUrl;
 				audio.load();
 				audio.play();
@@ -335,40 +271,13 @@ export default {
 			let track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
-		sortItems: function(key, sortAsc){
+		sortItems: function(items, key, sortAsc){
 			const relatedFields = {
 				artists: this.artistsMap,
 				genres: this.genresMap,
 				composers: this.composersMap,
 			};
-			Models.sortItems(this.items, key, sortAsc, relatedFields);
-		},
-		itemFields: function(item){
-			if(this.isTrackPage){
-				const track = item;
-				const genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
-				const composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
-				const albumTitle = track.album_id !== null ? this.albumsMap.get(track.album_id).title : '';
-				return [
-					track.title,
-					this.artistsMap.get(track.artist_id).name,
-					albumTitle,
-					this.formatTrackLength(track.length),
-					genre,
-					composer,
-					track.bit_rate,
-					track.play_count,
-					Util.formatUtcDateToUs(track.date_added),
-				];
-			}
-			else if(this.activePage === 'albums'){
-				const album = item;
-				return [
-					album.title,
-					this.artistsMap.get(album.artist_id).name,
-				];
-			}
-			return [item.name];
+			Models.sortItems(items, key, sortAsc, relatedFields);
 		},
 		formatTrackLength: Util.formatTrackLength,
 		searchForTracks: function(){
