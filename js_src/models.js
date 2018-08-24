@@ -84,6 +84,34 @@ function getAlbumItemColumns(){
             ];
 }
 
+function defaultItemFields(item){
+    return [item.name];
+}
+
+function albumItemFields(album){
+    return [
+        album.title,
+        this.artistsMap.get(album.artist_id).name,
+    ];
+}
+
+function trackItemFields(track){
+    const genre = track.genre_id !== null ? this.genresMap.get(track.genre_id).name : '';
+    const composer = track.composer_id !== null ? this.composersMap.get(track.composer_id).name : '';
+    const albumTitle = track.album_id !== null ? this.albumsMap.get(track.album_id).title : '';
+    return [
+        track.title,
+        this.artistsMap.get(track.artist_id).name,
+        albumTitle,
+        Util.formatTrackLength(track.length),
+        genre,
+        composer,
+        track.bit_rate,
+        track.play_count,
+        Util.formatUtcDateToUs(track.date_added),
+    ];
+}
+
 function sortItems(items, sortKey, sortAsc, relatedFields){
     function getRelatedFieldValueBuilder(itemKey, relatedFieldIdMap, relatedFieldKey='name'){
         return (item)=>{
@@ -168,6 +196,9 @@ export default {
     trackItemColumns: getTrackItemColumns(),
     defaultItemColumns: getDefaultItemColumns(),
     albumItemColumns: getAlbumItemColumns(),
+    defaultItemFields,
+    albumItemFields,
+    trackItemFields,
     sortItems,
     loadModelAndMap,
 };
