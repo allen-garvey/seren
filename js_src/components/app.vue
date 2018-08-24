@@ -6,10 +6,12 @@
 		</div>
 		<nav class="nav">
 			<ul class="nav-list nav-pills">
-				<li v-for="tab in tabs" :class="{active: activeTab === tab.path}" @click="changeTab(tab.path)" :key="tab.path">{{ tab.title }}</li>
+				<li v-for="(tab, i) in tabs" :class="{active: activeTab === tab.path}" @click="changeTab(tab.path)" :key="i">
+					<router-link :to="{name: tab.routeName}">{{ tab.title }}</router-link>
+				</li>
 			</ul>
 		</nav>
-		<Track-List :load-more-tracks="loadMoreTracks" :item-columns="itemColumns" :item-fields="itemFields" :is-track-playing="isTrackPlaying" :items="items" :sort-items-func="sortItems" :play-track="playTrack" :double-click-row-action="doubleClickRowAction" :is-infinite-scroll-disabled="isInfiniteScrollDisabled" />
+		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :double-click-row-action="doubleClickRowAction" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
 		<div class="media-controls-container">
 			<template v-if="activeTrack">
 				<div class="active-track-container marquee">
@@ -53,6 +55,7 @@ export default {
 		'Track-List': TrackList,
 	},
 	created(){
+		console.log(this.$route);
 		audio = new Audio();
 		audio.addEventListener('ended', ()=>{
 			if(this.hasNextTrack){
@@ -183,6 +186,11 @@ export default {
 		},
 	},
 	methods: {
+		getItems(key){
+			return new Promise((resolve, reject)=>{
+				resolve(this[key]);
+			});
+		},
 		changeTab: function(tabKey){
 			this.path = [tabKey];
 		},

@@ -6,26 +6,32 @@ function getTabs(){
         {
             path: 'artists', 
             title: 'Artists',
+            routeName: 'artistsIndex',
         },
         {
             path: 'albums', 
             title: 'Artists',
+            routeName: 'albumsIndex',
         },
         {
             path: 'composers', 
             title: 'Composers',
+            routeName: 'composersIndex',
         },
         {
             path: 'genres', 
             title: 'Genres',
+            routeName: 'genresIndex',
         },
         {
             path: 'tracks', 
             title: 'Tracks',
+            routeName: 'tracksIndex',
         },
         {
             path: 'search', 
             title: 'Search',
+            routeName: 'albumsIndex',
         },
     ];
 }

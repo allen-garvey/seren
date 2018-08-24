@@ -42,8 +42,12 @@ export default {
             type: Function,
             required: true,
         },
-        items: {
-            // type: Array, //can be null
+        getItems: {
+            type: Function,
+            required: true,
+        },
+        //might be string or function
+        getItemsKey: {
             required: true,
         },
         sortItemsFunc: {
@@ -60,21 +64,49 @@ export default {
         },
         isInfiniteScrollDisabled: {
             type: Boolean,
+            default: true,
+        },
+        artistsMap: {
+            type: Map,
+            required: true,
+        },
+        albumsMap: {
+            type: Map,
+            required: true,
+        },
+        genresMap: {
+            type: Map,
+            required: true,
+        },
+        composersMap: {
+            type: Map,
             required: true,
         },
     },
 	created(){
-
+        //watch for getItemsKey will not be called on initial load
+        this.loadItems();
 	},
 	data(){
 		return {
+            items: [],
 			previousSortKey: null,
-			sortAsc: true,
+            sortAsc: true,
 		};
 	},
 	computed: {
-	},
+    },
+    watch: {
+        getItemsKey(){
+            this.loadItems();
+        },
+    },
 	methods: {
+        loadItems(){
+            this.getItems(this.getItemsKey).then((items)=>{
+                this.items = items;
+            });
+        },
 		sortItems: function(key){
 			if(key !== this.previousSortKey){
 				this.sortAsc = true;
