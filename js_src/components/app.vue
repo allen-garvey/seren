@@ -6,7 +6,7 @@
 		</div>
 		<nav class="nav">
 			<ul class="nav-list nav-pills">
-				<li v-for="key in tabKeys" :class="{active: activeTab === key}" @click="changeTab(key)" :key="key">{{ tabs.get(key).title }}</li>
+				<li v-for="tab in tabs" :class="{active: activeTab === tab.path}" @click="changeTab(tab.path)" :key="tab.path">{{ tab.title }}</li>
 			</ul>
 		</nav>
 		<Track-List :load-more-tracks="loadMoreTracks" :item-columns="itemColumns" :item-fields="itemFields" :is-track-playing="isTrackPlaying" :items="items" :sort-items-func="sortItems" :play-track="playTrack" :double-click-row-action="doubleClickRowAction" :is-infinite-scroll-disabled="isInfiniteScrollDisabled" />
@@ -91,7 +91,7 @@ export default {
 			activeTrack: null,
 			isPlaying: false,
 			elapsedTime: 0,
-			tabs: Models.getTabsMap(),
+			tabs: Models.getTabs(),
 			path: ['artists'],
 			searchQuery: '',
 			searchResults: [],
@@ -101,10 +101,6 @@ export default {
 		};
 	},
 	computed: {
-		//for some reason when using single file components, this has to be computed property, rather than directly in v-for
-		tabKeys(){
-			return [...this.tabs.keys()];
-		},
 		activeTab: function(){
 			return this.path[0];
 		},
