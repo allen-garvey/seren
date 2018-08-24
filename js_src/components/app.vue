@@ -144,9 +144,7 @@ export default {
 		getItems(key){
 			if(typeof key === 'object'){
 				const apiUrl = `${ApiHelpers.apiUrlBase}/${key.apiPath}`;
-				return ApiHelpers.getJson(apiUrl).then((json)=>{
-					return json.data;
-				});
+				return ApiHelpers.getJson(apiUrl);
 			}
 
 			if(key === 'searchTracks'){
@@ -158,8 +156,8 @@ export default {
 					});
 				}
 				const searchUrl = `${ApiHelpers.apiUrlBase}/search/tracks?q=${encodeURIComponent(searchQuery)}`;
-				return ApiHelpers.getJson(searchUrl).then((json)=>{
-					this.searchResults = json.data;
+				return ApiHelpers.getJson(searchUrl).then((searchResults)=>{
+					this.searchResults = searchResults;
 					this.savedSearchResultsQuery = searchQuery;
 					return this.searchResults;
 				});
@@ -176,12 +174,12 @@ export default {
 			if(offset){
 				url = `${url}&offset=${offset}`;
 			}
-			return ApiHelpers.getJson(url).then((json)=>{
+			return ApiHelpers.getJson(url).then((tracks)=>{
 				if(offset){
-					this.tracks = this.tracks.concat(json.data);
+					this.tracks = this.tracks.concat(tracks);
 				}
 				else{
-					this.tracks = json.data;
+					this.tracks = tracks;
 				}
 			});
 		},
