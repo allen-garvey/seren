@@ -13,12 +13,6 @@ defmodule SerenWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", SerenWeb do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
-  end
-
   scope "/api", SerenWeb do
     pipe_through :api
 
@@ -34,6 +28,15 @@ defmodule SerenWeb.Router do
     get "/composers/:id/tracks",  ComposerController, :tracks_for
     get "/albums/:id/tracks",     AlbumController, :tracks_for
     get "/search/tracks",         SearchController,    :tracks_for
+  end
+
+  scope "/", SerenWeb do
+    pipe_through :browser # Use the default browser stack
+
+    # catch all requests and send index page for single page application
+    # note this has to be the last route, since routes declared after this one won't be triggered
+    # https://elixirforum.com/t/how-to-change-routes-for-single-page-application/3954
+    get "/*path", PageController, :index
   end
 
 end
