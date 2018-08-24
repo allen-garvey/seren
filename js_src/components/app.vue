@@ -6,7 +6,7 @@
 		</div>
 		<nav class="nav">
 			<ul class="nav-list nav-pills">
-				<li v-for="(tab, i) in tabs" :class="{active: activeTab === tab.path}" @click="changeTab(tab.path)" :key="i">
+				<li v-for="(tab, i) in tabs" :key="i">
 					<router-link :to="{name: tab.routeName}">{{ tab.title }}</router-link>
 				</li>
 			</ul>
