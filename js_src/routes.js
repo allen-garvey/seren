@@ -1,6 +1,17 @@
 import TrackList from './components/track-list.vue'
 import Models from './models';
 
+function relatedTracksProps(route){
+    return {
+        itemColumns: Models.trackItemColumns,
+        itemFields: Models.trackItemFields,
+        getItemsKey: {
+            apiPath: route.path
+        },
+    }; 
+}
+
+
 export default {
     mode: 'history',
     routes: [
@@ -99,13 +110,7 @@ export default {
             name: 'artistTracks', 
             component: TrackList,
             props: (route) => {
-                return {
-                    itemColumns: Models.trackItemColumns,
-                    itemFields: Models.trackItemFields,
-                    getItemsKey: {
-                        apiPath: route.path
-                    },
-                }; 
+                return relatedTracksProps(route);
             },
         },
         { 
@@ -113,13 +118,7 @@ export default {
             name: 'albumTracks', 
             component: TrackList,
             props: (route) => {
-                return {
-                    itemColumns: Models.trackItemColumns,
-                    itemFields: Models.trackItemFields,
-                    getItemsKey: {
-                        apiPath: route.path
-                    },
-                }; 
+                return relatedTracksProps(route);
             },
         },
         { 
@@ -127,13 +126,7 @@ export default {
             name: 'composerTracks', 
             component: TrackList,
             props: (route) => {
-                return {
-                    itemColumns: Models.trackItemColumns,
-                    itemFields: Models.trackItemFields,
-                    getItemsKey: {
-                        apiPath: route.path
-                    },
-                }; 
+                return relatedTracksProps(route);
             },
         },
         { 
@@ -141,13 +134,7 @@ export default {
             name: 'genreTracks', 
             component: TrackList,
             props: (route) => {
-                return {
-                    itemColumns: Models.trackItemColumns,
-                    itemFields: Models.trackItemFields,
-                    getItemsKey: {
-                        apiPath: route.path
-                    },
-                }; 
+                return relatedTracksProps(route); 
             },
         },
     ],
