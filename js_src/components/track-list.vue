@@ -103,6 +103,7 @@ export default {
     },
 	methods: {
         loadItems(){
+            this.items = [];
             this.getItems(this.getItemsKey).then((items)=>{
                 this.items = items;
             });
