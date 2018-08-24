@@ -1,6 +1,5 @@
 import TrackList from './components/track-list.vue'
 import Models from './models';
-import Util from './util';
 
 export default {
     mode: 'history',
@@ -19,6 +18,9 @@ export default {
                     itemColumns: Models.defaultItemColumns,
                     itemFields: Models.defaultItemFields,
                     getItemsKey: 'artists',
+                    routeForItem(item){
+                        return {name: 'artistTracks', params: {id: item.id}};
+                    },
                 }; 
             },
         },
@@ -31,6 +33,9 @@ export default {
                     itemColumns: Models.albumItemColumns,
                     itemFields: Models.albumItemFields,
                     getItemsKey: 'albums',
+                    routeForItem(item){
+                        return {name: 'albumTracks', params: {id: item.id}};
+                    },
                 }; 
             },
         },
@@ -43,6 +48,9 @@ export default {
                     itemColumns: Models.defaultItemColumns,
                     itemFields: Models.defaultItemFields,
                     getItemsKey: 'composers',
+                    routeForItem(item){
+                        return {name: 'composerTracks', params: {id: item.id}};
+                    },
                 }; 
             },
         },
@@ -55,6 +63,9 @@ export default {
                     itemColumns: Models.defaultItemColumns,
                     itemFields: Models.defaultItemFields,
                     getItemsKey: 'genres',
+                    routeForItem(item){
+                        return {name: 'genreTracks', params: {id: item.id}};
+                    },
                 }; 
             },
         },
@@ -80,6 +91,62 @@ export default {
                     itemColumns: Models.trackItemColumns,
                     itemFields: Models.trackItemFields,
                     getItemsKey: 'searchTracks',
+                }; 
+            },
+        },
+        { 
+            path: '/artists/:id/tracks',
+            name: 'artistTracks', 
+            component: TrackList,
+            props: (route) => {
+                return {
+                    itemColumns: Models.trackItemColumns,
+                    itemFields: Models.trackItemFields,
+                    getItemsKey: {
+                        apiPath: route.path
+                    },
+                }; 
+            },
+        },
+        { 
+            path: '/albums/:id/tracks',
+            name: 'albumTracks', 
+            component: TrackList,
+            props: (route) => {
+                return {
+                    itemColumns: Models.trackItemColumns,
+                    itemFields: Models.trackItemFields,
+                    getItemsKey: {
+                        apiPath: route.path
+                    },
+                }; 
+            },
+        },
+        { 
+            path: '/composers/:id/tracks',
+            name: 'composerTracks', 
+            component: TrackList,
+            props: (route) => {
+                return {
+                    itemColumns: Models.trackItemColumns,
+                    itemFields: Models.trackItemFields,
+                    getItemsKey: {
+                        apiPath: route.path
+                    },
+                }; 
+            },
+        },
+        { 
+            path: '/genres/:id/tracks',
+            name: 'genreTracks', 
+            component: TrackList,
+            props: (route) => {
+                return {
+                    itemColumns: Models.trackItemColumns,
+                    itemFields: Models.trackItemFields,
+                    getItemsKey: {
+                        apiPath: route.path
+                    },
                 }; 
             },
         },

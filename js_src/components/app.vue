@@ -11,7 +11,7 @@
 				</li>
 			</ul>
 		</nav>
-		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :double-click-row-action="doubleClickRowAction" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
+		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
 		<div class="media-controls-container">
 			<template v-if="activeTrack">
 				<div class="active-track-container marquee">
@@ -188,6 +188,13 @@ export default {
 	},
 	methods: {
 		getItems(key){
+			if(typeof key === 'object'){
+				const apiUrl = `${ApiHelpers.apiUrlBase}/${key.apiPath}`;
+				return ApiHelpers.getJson(apiUrl).then((json)=>{
+					return json.data;
+				});
+			}
+
 			if(key === 'searchTracks'){
 				const searchQuery = this.$route.query.q;
 				if(!searchQuery || this.savedSearchResultsQuery === searchQuery){
