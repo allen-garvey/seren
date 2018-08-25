@@ -28,7 +28,16 @@
 	cursor: pointer;
 	font-size: 24px;
 	margin-right: 3px;
+	border: 2px solid transparent;
+
+	&:hover, &:active{
+		border: 2px solid #2166ab;
+	}
+	&:active{
+		background-color: #85b8ea;
+	}
 }
+
 .button-play{
 	height: 48px;
 	width: 48px;
