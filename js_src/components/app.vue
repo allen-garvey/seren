@@ -206,16 +206,16 @@ export default {
 			if(!this.hasPreviousTrack){
 				return;
 			}
-			let trackIndex = this.activeTrack.index - 1;
-			let track = this.activeTrackTrackList[trackIndex];
+			const trackIndex = this.activeTrack.index - 1;
+			const track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
 		playNextTrack(){
 			if(!this.hasNextTrack){
 				return;
 			}
-			let trackIndex = this.activeTrack.index + 1;
-			let track = this.activeTrackTrackList[trackIndex];
+			const trackIndex = this.activeTrack.index + 1;
+			const track = this.activeTrackTrackList[trackIndex];
 			this.play(track, trackIndex, this.activeTrack.path);
 		},
 		sortItems(items, key, sortAsc){
