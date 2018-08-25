@@ -2,7 +2,7 @@
 * Layout
 */
 
-.active-track-container, .track-time{
+.active-track-display, .track-time{
 	margin-bottom: 8px;
 }
 
@@ -46,32 +46,4 @@
 }
 .button-next{
 	margin-right: 0;
-}
-
-/*
-* Animations
-*/
-//marquee based on: https://codepen.io/jamesbarnett/pen/kfmKa
-.marquee {
-  position: relative;
-  overflow: hidden;
-  height: 1.5em;
-  width: 625px;
-}
-
-.active-track-display {
-	position: absolute;
-	display: flex;
-	height: 100%;
-	animation: marquee 14s linear infinite;
-}
-
-.marquee span {
-	flex-basis: 50%;
-	white-space: nowrap;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
 }

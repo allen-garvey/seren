@@ -1,11 +1,8 @@
 <template>
     <div class="media-controls-container">
         <template v-if="hasActiveTrack">
-            <div class="active-track-container marquee">
-                <div class="active-track-display">
-                    <span>{{activeTrackDisplay}}</span>
-                    <span>{{activeTrackDisplay}}</span>
-                </div>
+            <div class="active-track-display">
+                {{activeTrackDisplay}}
             </div>
             <div class="track-time">
                 <span>{{formatTrackLength(elapsedTime)}}</span>
