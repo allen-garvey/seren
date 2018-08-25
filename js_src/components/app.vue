@@ -41,7 +41,6 @@
 import infiniteScroll from 'vue-infinite-scroll';
 import TrackList from './track-list.vue';
 import Models from '../models';
-import ArrayUtil from '../array-util';
 import ApiHelpers from '../api-helpers';
 import Util from '../util';
 
