@@ -6,28 +6,7 @@
 		</div>
 		<Nav-Tabs :search-query="searchQuery" />
 		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
-		<div class="media-controls-container">
-			<template v-if="hasActiveTrack">
-				<div class="active-track-container marquee">
-					<div class="active-track-display">
-						<span>{{activeTrackDisplay}}</span>
-						<span>{{activeTrackDisplay}}</span>
-					</div>
-				</div>
-				<div class="track-time">
-					<span>{{formatTrackLength(elapsedTime)}}</span>
-					<span>{{formatTrackLength(activeTrack.track.length)}}</span>
-				</div>
-				<div class="media-controls">
-					<button class="button-previous media-controls-button media-controls-button-rounded" @click="previousButtonAction" :disabled="!hasPreviousTrack" title="Play previous track">&#9194;</button>
-					<button class="button-play media-controls-button" :class="{'is-paused': !isPlaying}" @click="playButtonAction" :disabled="!activeTrack" :title="playButtonTitle">
-						<span v-html="playButtonText"></span>
-					</button>
-					<button class="button-next media-controls-button media-controls-button-rounded" @click="playNextTrack" :disabled="!hasNextTrack" title="Play next track">&#9193;</button>
-				</div>
-			</template>
-			<div v-if="!isInitialLoadComplete">Loading&hellip;</div>
-		</div>
+		<Media-Controls :elapsed-time="elapsedTime" :is-playing="isPlaying" :is-initial-load-complete="isInitialLoadComplete" :has-active-track="hasActiveTrack" :has-previous-track="hasPreviousTrack" :has-next-track="hasNextTrack" :artists-map="artistsMap" :active-track="activeTrack" :play-next-track="playNextTrack" :play-button-action="playButtonAction" :previous-button-action="previousButtonAction" />
 	</div>
 </template>
 
@@ -35,9 +14,10 @@
 import infiniteScroll from 'vue-infinite-scroll';
 import TrackList from './track-list.vue';
 import NavTabs from './nav-tabs.vue';
+import MediaControls from './media-controls.vue';
+
 import Models from '../models';
 import ApiHelpers from '../api-helpers';
-import Util from '../util';
 
 let audio = null;
 let elapsedTimeTimer = null;
@@ -48,6 +28,7 @@ export default {
 	components: {
 		TrackList,
 		NavTabs,
+		MediaControls,
 	},
 	created(){
 		audio = new Audio();
@@ -100,32 +81,6 @@ export default {
 	computed: {
 		hasActiveTrack(){
 			return 'id' in this.activeTrack.track;
-		},
-		activeTrackDisplay(){
-			if(!this.hasActiveTrack){
-				return '';
-			}
-			let ret = `${this.activeTrack.track.title} - ${this.artistsMap.get(this.activeTrack.track.artist_id).name}`;
-			if(this.activeTrack.track.album_title){
-				ret = `${ret} - ${this.activeTrack.track.album_title}`;
-			}
-			return ret;
-		},
-		playButtonTitle(){
-			if(this.isPlaying){
-				return `Pause ${this.activeTrack.track.title}`;
-			}
-			else if(this.hasActiveTrack){
-				return `Play ${this.activeTrack.track.title}`;
-			}
-			return 'Play track';
-
-		},
-		playButtonText(){
-			if(this.isPlaying){
-				return '&#9646;&#9646;';
-			}
-			return '&#9654;';
 		},
 		hasPreviousTrack(){
 			return this.hasActiveTrack && this.activeTrack.index > 0;
@@ -271,7 +226,6 @@ export default {
 			};
 			Models.sortItems(items, key, sortAsc, relatedFields);
 		},
-		formatTrackLength: Util.formatTrackLength,
 		searchForTracks(){
 			this.$router.push({name: 'searchTracks', query: { q: this.searchQuery }});
 		},
