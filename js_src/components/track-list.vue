@@ -1,5 +1,5 @@
 <template>
-    <table class="track-list" v-infinite-scroll="loadMoreTracks" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
+    <table class="track-list" v-infinite-scroll="infiniteScrollTriggered" infinite-scroll-distance="10" infinite-scroll-disabled="isInfiniteScrollDisabled" infinite-scroll-immediate-check="false">
         <thead>
             <th class="col-play-btn"></th>
             <template v-for="(column, i) in itemColumns">
@@ -110,6 +110,11 @@ export default {
             this.items = [];
             this.getItems(this.getItemsKey).then((items)=>{
                 this.items = items;
+            });
+        },
+        infiniteScrollTriggered(){
+            this.loadMoreTracks().then(()=>{
+                this.loadItems();
             });
         },
 		sortItems(key){
