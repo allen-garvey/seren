@@ -91,7 +91,6 @@ export default {
 			},
 			isPlaying: false,
 			elapsedTime: 0,
-			tabs: Models.getTabs(),
 			searchQuery: '',
 			searchResults: [],
 			savedSearchResultsQuery: '',
