@@ -59,20 +59,19 @@
   width: 625px;
 }
 
-.marquee div {
+.active-track-display {
 	position: absolute;
-	overflow: hidden;
-	width: 200%;
+	display: flex;
 	height: 100%;
 	animation: marquee 14s linear infinite;
 }
 
 .marquee span {
-  float: left;
-  width: 50%;
+	flex-basis: 50%;
+	white-space: nowrap;
 }
 
 @keyframes marquee {
-  0% { left: 0; }
-  100% { left: -100%; }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
 }
