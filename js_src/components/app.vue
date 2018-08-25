@@ -4,13 +4,7 @@
 			<input type="search" placeholder="Search tracks" v-model="searchQuery" @keyup.enter="searchForTracks" aria-labelledby="Search tracks"/>
 			<button @click="searchForTracks" :disabled="!searchQuery" class="outline-button">Search</button>
 		</div>
-		<nav class="nav">
-			<ul class="nav-list nav-pills">
-				<li v-for="(tab, i) in tabs" :key="i">
-					<router-link :to="tab.route(searchQuery)">{{ tab.title }}</router-link>
-				</li>
-			</ul>
-		</nav>
+		<Nav-Tabs :search-query="searchQuery" />
 		<router-view v-if="isInitialLoadComplete" :load-more-tracks="loadMoreTracks" :is-track-playing="isTrackPlaying" :sort-items-func="sortItems" :play-track="playTrack" :get-items="getItems" :artists-map="artistsMap" :albums-map="albumsMap" :genres-map="genresMap" :composers-map="composersMap" />
 		<div class="media-controls-container">
 			<template v-if="hasActiveTrack">
@@ -40,6 +34,7 @@
 <script>
 import infiniteScroll from 'vue-infinite-scroll';
 import TrackList from './track-list.vue';
+import NavTabs from './nav-tabs.vue';
 import Models from '../models';
 import ApiHelpers from '../api-helpers';
 import Util from '../util';
@@ -51,7 +46,8 @@ export default {
 	name: 'Seren-App',
 	directives: {infiniteScroll},
 	components: {
-		'Track-List': TrackList,
+		TrackList,
+		NavTabs,
 	},
 	created(){
 		audio = new Audio();
