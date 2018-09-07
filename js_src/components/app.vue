@@ -158,7 +158,9 @@ export default {
 				this.isPlaying = true;
 				this.elapsedTime = 0;
 				// const mediaUrl = '/media/' + encodeURI(track.file_path).replace('#', '%23').replace('?', '%3F');
-				const mediaUrl = '/media/' + escape(track.file_path);
+				//quick fix for bad encoding of non-ascii characters in file paths
+				//example sql query to get all bad file paths: select title, file_path from tracks where file_path ~ '[^[:ascii:]]';
+				const mediaUrl = '/media/' + encodeURI(track.file_path.replace(/é/g, 'é').replace(/ö/g, 'ö').replace(/è/g, 'è').replace(/ř/g, 'ř').replace(/í/g, 'í').replace(/á/g, 'á'));
 				audio.src = mediaUrl;
 				audio.load();
 				audio.play();
