@@ -58,6 +58,10 @@ export default {
             type: Function,
             required: true,
         },
+        stopTrack: {
+            type: Function,
+            required: true,
+        },
         //if on list page with list of tracks, routeForItem will be null meaning we should play the track, 
         //otherwise it will be a function taking the row and giving us a route to go to 
         routeForItem: {
@@ -128,7 +132,13 @@ export default {
             this.sortItemsFunc(this.items, key, this.sortAsc);
         },
         rowPlayButtonClicked(item, i){
-            if(this.canRowBePlayed){
+            if(!this.canRowBePlayed){
+                return;
+            }
+            if(this.isTrackPlaying(item)){
+                this.stopTrack();
+            }
+            else{
                 this.playTrack(item, i, this.items);
             }
         },
