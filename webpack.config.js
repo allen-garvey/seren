@@ -1,9 +1,10 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: "development",
-    entry: './js_src/index.js',
+    entry: [`${__dirname}/js_src/index.js`, `${__dirname}/sass/style.scss`,],
     output: {
         filename: 'app.js',
         path: path.resolve(__dirname, 'priv/static/js')
@@ -20,9 +21,32 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            minimize: true,
+                        },
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            outputStyle: 'compressed',
+                        },
+                    },
+                ]
+            },
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '../css/style.css',
+        }),
     ],
 };
