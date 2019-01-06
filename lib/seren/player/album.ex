@@ -18,7 +18,6 @@ defmodule Seren.Player.Album do
     album
     |> cast(attrs, [:title, :artist_id])
     |> validate_required([:title, :artist_id])
-    |> foreign_key_constraint(:artist_id)
     |> assoc_constraint(:artist)
   end
 end

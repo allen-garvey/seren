@@ -37,13 +37,9 @@ defmodule Seren.Player.Track do
     track
     |> cast(attrs, [:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :release_year, :album_disc_number, :album_disc_count, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :genre_id, :composer_id, :file_type_id, :album_id])
     |> validate_required([:itunes_id, :title, :date_modified, :date_added, :file_size, :file_path, :length, :bit_rate, :sample_rate, :track_number, :release_year, :album_disc_number, :album_disc_count, :album_track_count, :artwork_count, :play_count, :play_date, :artist_id, :file_type_id])
-    |> foreign_key_constraint(:artist_id)
     |> assoc_constraint(:artist)
-    |> foreign_key_constraint(:album_id)
     |> assoc_constraint(:album)
-    |> foreign_key_constraint(:genre_id)
     |> assoc_constraint(:genre)
-    |> foreign_key_constraint(:composer_id)
     |> assoc_constraint(:composer)
   end
 end
