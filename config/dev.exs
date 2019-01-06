@@ -38,7 +38,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
 config :seren, Seren.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "seren_dev",
